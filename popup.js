@@ -241,19 +241,27 @@ class ContrastManager {
   }
 
   getSiteScheme(site) {
-    console.log('ContrastManager: Getting scheme for site:', site);
+    if (!site) {
+      return this.getDefaultScheme();
+    }
+
     try {
-        const siteSchemes = JSON.parse(localStorage.getItem('siteschemes') || '{}');
-        const scheme = siteSchemes[site];
-        // Проверяем, что схема существует и валидна
-        const result = (scheme !== undefined && scheme >= 0 && scheme <= 5) ?
-            parseInt(scheme) :
-            this.getDefaultScheme();
-        console.log('ContrastManager: Site scheme:', result);
-        return result;
+      const siteSchemes = JSON.parse(localStorage.getItem('siteschemes') || '{}');
+      const scheme = siteSchemes[site];
+
+      // Проверяем, что схема существует и валидна
+      if (scheme !== undefined && scheme >= 0 && scheme <= 5) {
+        console.log(`ContrastManager: Site scheme for ${site}: ${scheme}`);
+        return parseInt(scheme);
+      }
+
+      // Если схема невалидна, возвращаем схему по умолчанию
+      const defaultScheme = this.getDefaultScheme();
+      console.log(`ContrastManager: Using default scheme for ${site}: ${defaultScheme}`);
+      return defaultScheme;
     } catch (error) {
-        console.error('ContrastManager: Error getting site scheme:', error);
-        return this.getDefaultScheme();
+      console.error(`ContrastManager: Error getting site scheme for ${site}:`, error);
+      return this.getDefaultScheme();
     }
   }
 
@@ -288,21 +296,86 @@ class ContrastManager {
 
   handleSchemeChange(value) {
     const oldScheme = this.getCurrentScheme();
+    const site = this.site;
+
+    // Проверка на валидность значения схемы
+    if (value < 0 || value > 5) {
+      console.error(`ContrastManager: Invalid scheme value: ${value}`);
+      return;
+    }
+
     console.log(
       `ContrastManager: Scheme change initiated - From: ${oldScheme} To: ${value}`
     );
 
-    if (this.site) {
-      console.log(`ContrastManager: Updating site-specific scheme for ${this.site}`);
-      this.setSiteScheme(this.site, value);
-    } else {
-      console.log("ContrastManager: Updating default scheme");
-      localStorage.setItem("scheme", value);
+    try {
+      if (site) {
+        console.log(`ContrastManager: Updating site-specific scheme for ${site}`);
+        this.setSiteScheme(site, value);
+      } else {
+        console.log("ContrastManager: Updating default scheme");
+        localStorage.setItem("scheme", value);
+      }
+
+      console.log(`ContrastManager: Scheme transition completed: ${oldScheme} → ${value}`);
+
+      // Кэшируем состояние перед обновлением UI
+      const cachedState = {
+        enabled: this.getEnabled(),
+        scheme: value,
+        site: site
+      };
+
+      // Обновляем UI с использованием кэшированного состояния
+      this.updateUIWithState(cachedState);
+
+      // Отправляем сообщение об обновлении только после успешного изменения
+      chrome.runtime.sendMessage({
+        action: "updateTabs",
+        scheme: value,
+        site: site
+      });
+    } catch (error) {
+      console.error(`ContrastManager: Failed to change scheme:`, error);
+      // Восстанавливаем предыдущую схему в случае ошибки
+      this.handleSchemeError(oldScheme);
+    }
+  }
+
+  // Новый метод для обновления UI с кэшированным состоянием
+  updateUIWithState(state) {
+    console.log("ContrastManager: Updating UI with cached state:", state);
+
+    document.body.classList.toggle("disabled", !state.enabled);
+    this.updateTitle(state.enabled);
+    this.updateToggleButton(state.enabled);
+    this.updateSubControls(state.enabled);
+
+    // Обновляем выбор схемы без дополнительных запросов к localStorage
+    this.setRadioValue("scheme", state.scheme);
+
+    if (state.site) {
+      const makeDefaultBtn = document.getElementById("make_default");
+      const defaultScheme = this.getDefaultScheme();
+      makeDefaultBtn.disabled = state.scheme === defaultScheme;
     }
 
-    console.log(`ContrastManager: Scheme transition completed: ${oldScheme} → ${value}`);
+    // Обновляем атрибуты документа
+    const hcValue = state.enabled ? `a${state.scheme}` : "a0";
+    document.documentElement.setAttribute("hc", hcValue);
+  }
+
+  // Новый метод для обработки ошибок при переключении схем
+  handleSchemeError(previousScheme) {
+    console.log(`ContrastManager: Reverting to previous scheme: ${previousScheme}`);
+
+    if (this.site) {
+      this.setSiteScheme(this.site, previousScheme);
+    } else {
+      localStorage.setItem("scheme", previousScheme);
+    }
+
     this.updateUI();
-    chrome.runtime.sendMessage({ action: "updateTabs" });
   }
 
   makeDefault() {
