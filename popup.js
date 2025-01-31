@@ -459,7 +459,7 @@ class ContrastManager {
 
     // Очищаем все настройки для отдельных сайтов
     localStorage.removeItem("siteschemes");
-    this.cache.siteSchemes = {};
+    this.clearCache(); // Полная очистка кэша
 
     // Устанавливаем сохраненную схему как схему по умолчанию
     if (currentScheme !== undefined) {
@@ -484,10 +484,15 @@ class ContrastManager {
     localStorage.setItem("defaultCustomStyles", JSON.stringify(customStyles));
     localStorage.setItem("customStyles", JSON.stringify(customStyles));
 
+    // Принудительно обновляем UI перед перезагрузкой
     this.updateUI();
+
+    // Отправляем сообщение об обновлении с новыми настройками
     chrome.runtime.sendMessage({
       action: "updateTabs",
+      scheme: currentScheme,
       customStyles: customStyles,
+      resetSiteSchemes: true // Добавляем флаг для полного сброса настроек сайтов
     });
 
     // Перезагружаем текущую вкладку для применения изменений
@@ -497,6 +502,12 @@ class ContrastManager {
         chrome.tabs.reload(tabs[0].id);
       }
     });
+
+    // Повторно обновляем UI после небольшой задержки
+    setTimeout(() => {
+      this.clearCache(); // Повторная очистка кэша
+      this.updateUI();
+    }, 100);
   }
 
   resetSettings() {
