@@ -1,79 +1,79 @@
 /* Base high contrast styles */
 .high-contrast-enabled {
-    background-color: #000000 !important;
-    color: #FFFFFF !important;
+  background-color: #000000 !important;
+  color: #ffffff !important;
 }
 
 .high-contrast-enabled a {
-    color: #00FF00 !important;
+  color: #00ff00 !important;
 }
 
 .high-contrast-enabled img {
-    filter: contrast(150%) brightness(120%) !important;
+  filter: contrast(150%) brightness(120%) !important;
 }
 
 /* Scheme 1: White on Black */
 .high-contrast-scheme-1 {
-    background-color: #000000 !important;
-    color: #FFFFFF !important;
+  background-color: #000000 !important;
+  color: #ffffff !important;
 }
 
 /* Scheme 2: Black on White */
 .high-contrast-scheme-2 {
-    background-color: #FFFFFF !important;
-    color: #000000 !important;
+  background-color: #ffffff !important;
+  color: #000000 !important;
 }
 
 /* Scheme 3: Yellow on Black */
 .high-contrast-scheme-3 {
-    background-color: #000000 !important;
-    color: #FFFF00 !important;
+  background-color: #000000 !important;
+  color: #ffff00 !important;
 }
 
 /* Scheme 4: Green on Black */
 .high-contrast-scheme-4 {
-    background-color: #000000 !important;
-    color: #00FF00 !important;
+  background-color: #000000 !important;
+  color: #00ff00 !important;
 }
 
 /* Scheme 5: Yellow on Blue */
 .high-contrast-scheme-5 {
-    background-color: #000066 !important;
-    color: #FFFF00 !important;
+  background-color: #000066 !important;
+  color: #ffff00 !important;
 }
 
 /* Override common elements */
 .high-contrast-enabled input,
 .high-contrast-enabled textarea,
 .high-contrast-enabled select {
-    background-color: inherit !important;
-    color: inherit !important;
-    border: 1px solid currentColor !important;
+  background-color: inherit !important;
+  color: inherit !important;
+  border: 1px solid currentColor !important;
 }
 
 /* Ensure text remains readable */
 .high-contrast-enabled ::selection {
-    background-color: #FFFFFF !important;
-    color: #000000 !important;
+  background-color: #ffffff !important;
+  color: #000000 !important;
 }
 
 /* Enhance link visibility */
 .high-contrast-enabled a:hover,
 .high-contrast-enabled a:focus {
-    text-decoration: underline !important;
-    outline: 2px solid currentColor !important;
+  text-decoration: underline !important;
+  outline: 2px solid currentColor !important;
 }
 
 /* Ensure buttons are visible */
 .high-contrast-enabled button {
-    background-color: inherit !important;
-    color: inherit !important;
-    border: 2px solid currentColor !important;
-    padding: 2px 8px !important;
+  background-color: inherit !important;
+  color: inherit !important;
+  border: 2px solid currentColor !important;
+  padding: 2px 8px !important;
 }
 
 /* Enhance focus states */
 .high-contrast-enabled *:focus {
-    outline: 2px solid currentColor !important;
-    outline-offset: 2px !important;
+  outline: 2px solid currentColor !important;
+  outline-offset: 2px !important;
 }

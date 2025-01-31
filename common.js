@@ -1,7 +1,3 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 var DEFAULT_SCHEME = 3;
 var MAX_SCHEME = 5;
 
@@ -10,42 +6,42 @@ function $(id) {
 }
 
 function getEnabled() {
-  var result = localStorage['enabled'];
-  if (result === 'true' || result === 'false') {
-    return (result === 'true');
+  var result = localStorage["enabled"];
+  if (result === "true" || result === "false") {
+    return result === "true";
   }
-  localStorage['enabled'] = 'true';
+  localStorage["enabled"] = "true";
   return true;
 }
 
 function setEnabled(enabled) {
-  localStorage['enabled'] = enabled;
+  localStorage["enabled"] = enabled;
 }
 
 function getKeyAction() {
-  var keyAction = localStorage['keyaction'];
-  if (keyAction == 'global' || keyAction == 'site') {
+  var keyAction = localStorage["keyaction"];
+  if (keyAction == "global" || keyAction == "site") {
     return keyAction;
   }
-  keyAction = 'global';
-  localStorage['keyaction'] = keyAction;
+  keyAction = "global";
+  localStorage["keyaction"] = keyAction;
   return keyAction;
 }
 
 function setKeyAction(keyAction) {
-  if (keyAction != 'global' && keyAction != 'site') {
-    keyAction = 'global';
+  if (keyAction != "global" && keyAction != "site") {
+    keyAction = "global";
   }
-  localStorage['keyaction'] = keyAction;
+  localStorage["keyaction"] = keyAction;
 }
 
 function getDefaultScheme() {
-  var scheme = localStorage['scheme'];
+  var scheme = localStorage["scheme"];
   if (scheme >= 0 && scheme <= MAX_SCHEME) {
     return scheme;
   }
   scheme = DEFAULT_SCHEME;
-  localStorage['scheme'] = scheme;
+  localStorage["scheme"] = scheme;
   return scheme;
 }
 
@@ -53,13 +49,13 @@ function setDefaultScheme(scheme) {
   if (!(scheme >= 0 && scheme <= MAX_SCHEME)) {
     scheme = DEFAULT_SCHEME;
   }
-  localStorage['scheme'] = scheme;
+  localStorage["scheme"] = scheme;
 }
 
 function getSiteScheme(site) {
   var scheme = getDefaultScheme();
   try {
-    var siteSchemes = JSON.parse(localStorage['siteschemes']);
+    var siteSchemes = JSON.parse(localStorage["siteschemes"]);
     scheme = siteSchemes[site];
     if (!(scheme >= 0 && scheme <= MAX_SCHEME)) {
       scheme = getDefaultScheme();
@@ -76,26 +72,26 @@ function setSiteScheme(site, scheme) {
   }
   var siteSchemes = {};
   try {
-    siteSchemes = JSON.parse(localStorage['siteschemes']);
-    siteSchemes['www.example.com'] = getDefaultScheme();
+    siteSchemes = JSON.parse(localStorage["siteschemes"]);
+    siteSchemes["www.example.com"] = getDefaultScheme();
   } catch (e) {
     siteSchemes = {};
   }
   siteSchemes[site] = scheme;
-  localStorage['siteschemes'] = JSON.stringify(siteSchemes);
+  localStorage["siteschemes"] = JSON.stringify(siteSchemes);
 }
 
 function resetSiteSchemes() {
   var siteSchemes = {};
-  localStorage['siteschemes'] = JSON.stringify(siteSchemes);
+  localStorage["siteschemes"] = JSON.stringify(siteSchemes);
 }
 
 function siteFromUrl(url) {
-  var a = document.createElement('a');
+  var a = document.createElement("a");
   a.href = url;
   return a.hostname;
 }
 
 function isDisallowedUrl(url) {
-  return url.indexOf('chrome') == 0 || url.indexOf('about') == 0;
+  return url.indexOf("chrome") == 0 || url.indexOf("about") == 0;
 }
