@@ -12,7 +12,7 @@ class ContrastManager {
     this.cache = {
       enabled: null,
       defaultScheme: null,
-      siteSchemes: null
+      siteSchemes: null,
     };
 
     console.log("ContrastManager: Shortcuts configured:", this.shortcuts);
@@ -25,6 +25,16 @@ class ContrastManager {
       INVERTED: "3",
       INVERTED_GRAYSCALE: "4",
       YELLOW_ON_BLACK: "5",
+    };
+
+    // Добавляем названия схем
+    this.SCHEME_NAMES = {
+      "0": "Нормальный контраст",
+      "1": "Повышенный контраст",
+      "2": "Оттенки серого",
+      "3": "Инвертированные цвета",
+      "4": "Инвертированные оттенки серого",
+      "5": "Желтый на черном",
     };
 
     this.init();
@@ -55,43 +65,50 @@ class ContrastManager {
     console.log("ContrastManager: Setting up event listeners...");
 
     // Слушатели для радио кнопок
-    document.querySelectorAll('input[name="scheme"]').forEach(radio => {
-      radio.addEventListener('change', (e) => {
+    document.querySelectorAll('input[name="scheme"]').forEach((radio) => {
+      radio.addEventListener("change", (e) => {
         if (e.target.checked) {
-          console.log('ContrastManager: Radio button changed to:', e.target.value);
+          console.log(
+            "ContrastManager: Radio button changed to:",
+            e.target.value
+          );
           this.handleSchemeChange(parseInt(e.target.value));
         }
       });
     });
 
     // Слушатели для ползунков - только обновляем отображение значений
-    document.getElementById('contrast').addEventListener('input', (e) => {
-      document.getElementById('contrastValue').textContent = e.target.value + '%';
+    document.getElementById("contrast").addEventListener("input", (e) => {
+      document.getElementById("contrastValue").textContent =
+        e.target.value + "%";
     });
 
-    document.getElementById('brightness').addEventListener('input', (e) => {
-      document.getElementById('brightnessValue').textContent = e.target.value + '%';
+    document.getElementById("brightness").addEventListener("input", (e) => {
+      document.getElementById("brightnessValue").textContent =
+        e.target.value + "%";
     });
 
     // Кнопка применения пользовательских настроек
-    document.getElementById('apply_custom_styles').addEventListener('click', () => {
-      console.log('ContrastManager: Applying custom styles');
-      this.updateCustomStyles();
-    });
+    document
+      .getElementById("apply_custom_styles")
+      .addEventListener("click", () => {
+        console.log("ContrastManager: Applying custom styles");
+        this.updateCustomStyles();
+      });
 
     // Существующие слушатели
-    document.getElementById('toggle').addEventListener('click', () => {
-      console.log('ContrastManager: Toggle button clicked');
+    document.getElementById("toggle").addEventListener("click", () => {
+      console.log("ContrastManager: Toggle button clicked");
       this.toggleContrast();
     });
 
-    document.getElementById('make_default').addEventListener('click', () => {
-      console.log('ContrastManager: Make default button clicked');
+    document.getElementById("make_default").addEventListener("click", () => {
+      console.log("ContrastManager: Make default button clicked");
       this.makeDefault();
     });
 
-    document.getElementById('forget').addEventListener('click', () => {
-      console.log('ContrastManager: Forget button clicked');
+    document.getElementById("forget").addEventListener("click", () => {
+      console.log("ContrastManager: Forget button clicked");
       this.resetSettings();
     });
   }
@@ -181,8 +198,12 @@ class ContrastManager {
 
   // Получение текущей схемы с учетом сайта
   getCurrentScheme() {
-    const scheme = !this.site ? this.getDefaultScheme() : this.getSiteScheme(this.site);
-    console.log(`ContrastManager: Current scheme for ${this.site || 'default'}: ${scheme}`);
+    const scheme = !this.site
+      ? this.getDefaultScheme()
+      : this.getSiteScheme(this.site);
+    console.log(
+      `ContrastManager: Current scheme for ${this.site || "default"}: ${scheme}`
+    );
     return scheme;
   }
 
@@ -233,14 +254,17 @@ class ContrastManager {
     this.cache = {
       enabled: null,
       defaultScheme: null,
-      siteSchemes: null
+      siteSchemes: null,
     };
   }
 
   getEnabled() {
     if (this.cache.enabled === null) {
       this.cache.enabled = localStorage.getItem("enabled") !== "false";
-      console.log("ContrastManager: Getting enabled state:", this.cache.enabled);
+      console.log(
+        "ContrastManager: Getting enabled state:",
+        this.cache.enabled
+      );
     }
     return this.cache.enabled;
   }
@@ -253,9 +277,13 @@ class ContrastManager {
 
   getDefaultScheme() {
     if (this.cache.defaultScheme === null) {
-      const scheme = localStorage.getItem('scheme');
-      this.cache.defaultScheme = (scheme !== null && scheme >= 0 && scheme <= 5) ? parseInt(scheme) : 3;
-      console.log('ContrastManager: Getting default scheme:', this.cache.defaultScheme);
+      const scheme = localStorage.getItem("scheme");
+      this.cache.defaultScheme =
+        scheme !== null && scheme >= 0 && scheme <= 5 ? parseInt(scheme) : 3;
+      console.log(
+        "ContrastManager: Getting default scheme:",
+        this.cache.defaultScheme
+      );
     }
     return this.cache.defaultScheme;
   }
@@ -263,9 +291,11 @@ class ContrastManager {
   getSiteSchemes() {
     if (this.cache.siteSchemes === null) {
       try {
-        this.cache.siteSchemes = JSON.parse(localStorage.getItem('siteschemes') || '{}');
+        this.cache.siteSchemes = JSON.parse(
+          localStorage.getItem("siteschemes") || "{}"
+        );
       } catch (error) {
-        console.error('ContrastManager: Error parsing site schemes:', error);
+        console.error("ContrastManager: Error parsing site schemes:", error);
         this.cache.siteSchemes = {};
       }
     }
@@ -288,14 +318,16 @@ class ContrastManager {
 
     // Если схема невалидна, возвращаем схему по умолчанию
     const defaultScheme = this.getDefaultScheme();
-    console.log(`ContrastManager: Using default scheme for ${site}: ${defaultScheme}`);
+    console.log(
+      `ContrastManager: Using default scheme for ${site}: ${defaultScheme}`
+    );
     return defaultScheme;
   }
 
   setSiteScheme(site, scheme) {
     const oldScheme = this.getSiteScheme(site);
     console.log(
-      `ContrastManager: Updating scheme for ${site}: ${oldScheme} → ${scheme}`
+      `ContrastManager: Updating scheme for ${site}: ${oldScheme} (${this.getSchemeName(oldScheme)}) → ${scheme} (${this.getSchemeName(scheme)})`
     );
 
     try {
@@ -303,9 +335,12 @@ class ContrastManager {
       siteSchemes[site] = scheme;
       localStorage.setItem("siteschemes", JSON.stringify(siteSchemes));
       this.cache.siteSchemes = siteSchemes;
-      console.log(`ContrastManager: Successfully updated scheme for ${site}`);
+      console.log(`ContrastManager: Successfully updated scheme for ${site} to "${this.getSchemeName(scheme)}"`);
     } catch (error) {
-      console.error(`ContrastManager: Failed to update scheme for ${site}:`, error);
+      console.error(
+        `ContrastManager: Failed to update scheme for ${site}:`,
+        error
+      );
     }
   }
 
@@ -331,26 +366,30 @@ class ContrastManager {
     }
 
     console.log(
-      `ContrastManager: Scheme change initiated - From: ${oldScheme} To: ${value}`
+      `ContrastManager: Scheme change initiated - From: ${oldScheme} (${this.getSchemeName(oldScheme)}) To: ${value} (${this.getSchemeName(value)})`
     );
 
     try {
       if (site) {
-        console.log(`ContrastManager: Updating site-specific scheme for ${site}`);
+        console.log(
+          `ContrastManager: Updating site-specific scheme for ${site} from "${this.getSchemeName(oldScheme)}" to "${this.getSchemeName(value)}"`
+        );
         this.setSiteScheme(site, value);
       } else {
-        console.log("ContrastManager: Updating default scheme");
+        console.log(`ContrastManager: Updating default scheme from "${this.getSchemeName(oldScheme)}" to "${this.getSchemeName(value)}"`);
         localStorage.setItem("scheme", value);
         this.cache.defaultScheme = value;
       }
 
-      console.log(`ContrastManager: Scheme transition completed: ${oldScheme} → ${value}`);
+      console.log(
+        `ContrastManager: Scheme transition completed: ${this.getSchemeName(oldScheme)} → ${this.getSchemeName(value)}`
+      );
 
       // Кэшируем состояние перед обновлением UI
       const cachedState = {
         enabled: this.getEnabled(),
         scheme: value,
-        site: site
+        site: site,
       };
 
       // Обновляем UI с использованием кэшированного состояния
@@ -360,7 +399,7 @@ class ContrastManager {
       chrome.runtime.sendMessage({
         action: "updateTabs",
         scheme: value,
-        site: site
+        site: site,
       });
     } catch (error) {
       console.error(`ContrastManager: Failed to change scheme:`, error);
@@ -393,7 +432,9 @@ class ContrastManager {
 
   // Новый метод для обработки ошибок при переключении схем
   handleSchemeError(previousScheme) {
-    console.log(`ContrastManager: Reverting to previous scheme: ${previousScheme}`);
+    console.log(
+      `ContrastManager: Reverting to previous scheme: ${previousScheme}`
+    );
 
     if (this.site) {
       this.setSiteScheme(this.site, previousScheme);
@@ -405,50 +446,83 @@ class ContrastManager {
   }
 
   makeDefault() {
-    console.log('ContrastManager: Making current settings default');
+    console.log("ContrastManager: Making current settings default");
+
+    // Сохраняем текущую схему до очистки
+    let currentScheme;
     if (this.site) {
-        // Сохраняем текущую схему как схему по умолчанию
-        const currentScheme = this.getSiteScheme(this.site);
-        localStorage.setItem('scheme', currentScheme);
+      currentScheme = this.getSiteScheme(this.site);
+      console.log(
+        `ContrastManager: Saving current scheme before cleanup: ${currentScheme} (${this.getSchemeName(currentScheme)})`
+      );
+    }
+
+    // Очищаем все настройки для отдельных сайтов
+    localStorage.removeItem("siteschemes");
+    this.cache.siteSchemes = {};
+
+    // Устанавливаем сохраненную схему как схему по умолчанию
+    if (currentScheme !== undefined) {
+      console.log(
+        `ContrastManager: Setting saved scheme as default: ${currentScheme} (${this.getSchemeName(currentScheme)})`
+      );
+      localStorage.setItem("scheme", currentScheme);
+      this.cache.defaultScheme = currentScheme;
     }
 
     // Сохраняем текущие пользовательские настройки как настройки по умолчанию
     const customStyles = {
-        contrast: document.getElementById('contrast').value,
-        brightness: document.getElementById('brightness').value,
-        textColor: document.getElementById('textColor').value,
-        bgColor: document.getElementById('bgColor').value,
-        linkColor: document.getElementById('linkColor').value,
-        enabled: true
+      contrast: document.getElementById("contrast").value,
+      brightness: document.getElementById("brightness").value,
+      textColor: document.getElementById("textColor").value,
+      bgColor: document.getElementById("bgColor").value,
+      linkColor: document.getElementById("linkColor").value,
+      enabled: true,
     };
 
-    console.log('ContrastManager: Saving default custom styles:', customStyles);
-    localStorage.setItem('defaultCustomStyles', JSON.stringify(customStyles));
-    localStorage.setItem('customStyles', JSON.stringify(customStyles));
+    console.log("ContrastManager: Saving default custom styles:", customStyles);
+    localStorage.setItem("defaultCustomStyles", JSON.stringify(customStyles));
+    localStorage.setItem("customStyles", JSON.stringify(customStyles));
 
     this.updateUI();
     chrome.runtime.sendMessage({
-        action: 'updateTabs',
-        customStyles: customStyles
+      action: "updateTabs",
+      customStyles: customStyles,
+    });
+
+    // Перезагружаем текущую вкладку для применения изменений
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]) {
+        console.log("ContrastManager: Reloading current tab to apply changes");
+        chrome.tabs.reload(tabs[0].id);
+      }
     });
   }
 
   resetSettings() {
-    console.log('ContrastManager: Starting settings reset...');
+    console.log("ContrastManager: Starting settings reset...");
 
     // Сохраняем текущие настройки для логирования
     const currentSettings = {
       scheme: this.getCurrentScheme(),
-      styles: JSON.parse(localStorage.getItem('customStyles') || '{}'),
-      siteSchemes: this.getSiteSchemes()
+      styles: JSON.parse(localStorage.getItem("customStyles") || "{}"),
+      siteSchemes: this.getSiteSchemes(),
     };
 
-    console.log('ContrastManager: Current settings before reset:', currentSettings);
+    console.log(
+      "ContrastManager: Current settings before reset:",
+      currentSettings
+    );
 
     // Сбрасываем все настройки в localStorage
-    const keysToRemove = ['siteschemes', 'scheme', 'customStyles', 'defaultCustomStyles'];
-    console.log('ContrastManager: Removing stored settings:', keysToRemove);
-    keysToRemove.forEach(key => {
+    const keysToRemove = [
+      "siteschemes",
+      "scheme",
+      "customStyles",
+      "defaultCustomStyles",
+    ];
+    console.log("ContrastManager: Removing stored settings:", keysToRemove);
+    keysToRemove.forEach((key) => {
       console.log(`ContrastManager: Removing ${key} from localStorage`);
       localStorage.removeItem(key);
     });
@@ -458,23 +532,23 @@ class ContrastManager {
 
     // Устанавливаем начальные значения
     const defaultStyles = {
-      contrast: '150',
-      brightness: '120',
-      textColor: '#ffffff',
-      bgColor: '#000000',
-      linkColor: '#00ff00',
-      enabled: true
+      contrast: "150",
+      brightness: "120",
+      textColor: "#ffffff",
+      bgColor: "#000000",
+      linkColor: "#00ff00",
+      enabled: true,
     };
 
-    console.log('ContrastManager: Restoring to default styles:', defaultStyles);
+    console.log("ContrastManager: Restoring to default styles:", defaultStyles);
 
     // Обновляем значения в интерфейсе с подробным логированием
     const elements = {
-      contrast: ['value', '%'],
-      brightness: ['value', '%'],
-      textColor: ['value', ''],
-      bgColor: ['value', ''],
-      linkColor: ['value', '']
+      contrast: ["value", "%"],
+      brightness: ["value", "%"],
+      textColor: ["value", ""],
+      bgColor: ["value", ""],
+      linkColor: ["value", ""],
     };
 
     Object.entries(elements).forEach(([id, [prop, suffix]]) => {
@@ -485,43 +559,45 @@ class ContrastManager {
       console.log(`ContrastManager: Updating ${id}: ${oldValue} → ${newValue}`);
       element.value = newValue;
 
-      const valueDisplay = document.getElementById(id + 'Value');
+      const valueDisplay = document.getElementById(id + "Value");
       if (valueDisplay) {
         valueDisplay.textContent = newValue + suffix;
       }
     });
 
     // Устанавливаем схему по умолчанию
-    const defaultScheme = '3';
-    console.log(`ContrastManager: Setting default scheme: ${currentSettings.scheme} → ${defaultScheme}`);
-    localStorage.setItem('scheme', defaultScheme);
-    localStorage.setItem('customStyles', JSON.stringify(defaultStyles));
+    const defaultScheme = "3";
+    console.log(
+      `ContrastManager: Setting default scheme: ${currentSettings.scheme} → ${defaultScheme}`
+    );
+    localStorage.setItem("scheme", defaultScheme);
+    localStorage.setItem("customStyles", JSON.stringify(defaultStyles));
 
-    console.log('ContrastManager: Reset summary:', {
-      'Previous Settings': currentSettings,
-      'New Settings': {
+    console.log("ContrastManager: Reset summary:", {
+      "Previous Settings": currentSettings,
+      "New Settings": {
         scheme: defaultScheme,
         styles: defaultStyles,
-        siteSchemes: {}
-      }
+        siteSchemes: {},
+      },
     });
 
     // Обновляем UI и отправляем сообщение об обновлении
     this.updateUI();
     chrome.runtime.sendMessage({
-      action: 'updateTabs',
-      customStyles: defaultStyles
+      action: "updateTabs",
+      customStyles: defaultStyles,
     });
 
     // Перезагружаем текущую вкладку
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs[0]) {
-        console.log('ContrastManager: Reloading current tab to apply changes');
+        console.log("ContrastManager: Reloading current tab to apply changes");
         chrome.tabs.reload(tabs[0].id);
       }
     });
 
-    console.log('ContrastManager: Settings reset completed');
+    console.log("ContrastManager: Settings reset completed");
   }
 
   // Утилитарный метод для установки значения radio кнопок
@@ -535,62 +611,71 @@ class ContrastManager {
   }
 
   updateCustomStyles() {
-    console.log('ContrastManager: Updating custom styles');
-    const contrast = document.getElementById('contrast').value;
-    const brightness = document.getElementById('brightness').value;
-    const textColor = document.getElementById('textColor').value;
-    const bgColor = document.getElementById('bgColor').value;
-    const linkColor = document.getElementById('linkColor').value;
+    console.log("ContrastManager: Updating custom styles");
+    const contrast = document.getElementById("contrast").value;
+    const brightness = document.getElementById("brightness").value;
+    const textColor = document.getElementById("textColor").value;
+    const bgColor = document.getElementById("bgColor").value;
+    const linkColor = document.getElementById("linkColor").value;
 
     const customStyles = {
-        contrast,
-        brightness,
-        textColor,
-        bgColor,
-        linkColor,
-        enabled: true // Добавляем флаг активации
+      contrast,
+      brightness,
+      textColor,
+      bgColor,
+      linkColor,
+      enabled: true, // Добавляем флаг активации
     };
 
-    console.log('ContrastManager: New custom styles:', customStyles);
-    localStorage.setItem('customStyles', JSON.stringify(customStyles));
+    console.log("ContrastManager: New custom styles:", customStyles);
+    localStorage.setItem("customStyles", JSON.stringify(customStyles));
 
     // Отправляем сообщение для обновления всех вкладок с новыми стилями
     chrome.runtime.sendMessage({
-        action: 'updateTabs',
-        customStyles: customStyles
+      action: "updateTabs",
+      customStyles: customStyles,
     });
 
     // Принудительно обновляем текущую вкладку
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs[0]) {
-            chrome.tabs.sendMessage(tabs[0].id, {
-                enabled: true,
-                customStyles: customStyles
-            });
-        }
+      if (tabs[0]) {
+        chrome.tabs.sendMessage(tabs[0].id, {
+          enabled: true,
+          customStyles: customStyles,
+        });
+      }
     });
   }
 
   loadCustomStyles() {
-    const savedStyles = JSON.parse(localStorage.getItem('customStyles') || '{}');
+    const savedStyles = JSON.parse(
+      localStorage.getItem("customStyles") || "{}"
+    );
 
     if (savedStyles.contrast) {
-      document.getElementById('contrast').value = savedStyles.contrast;
-      document.getElementById('contrastValue').textContent = savedStyles.contrast + '%';
+      document.getElementById("contrast").value = savedStyles.contrast;
+      document.getElementById("contrastValue").textContent =
+        savedStyles.contrast + "%";
     }
     if (savedStyles.brightness) {
-      document.getElementById('brightness').value = savedStyles.brightness;
-      document.getElementById('brightnessValue').textContent = savedStyles.brightness + '%';
+      document.getElementById("brightness").value = savedStyles.brightness;
+      document.getElementById("brightnessValue").textContent =
+        savedStyles.brightness + "%";
     }
     if (savedStyles.textColor) {
-      document.getElementById('textColor').value = savedStyles.textColor;
+      document.getElementById("textColor").value = savedStyles.textColor;
     }
     if (savedStyles.bgColor) {
-      document.getElementById('bgColor').value = savedStyles.bgColor;
+      document.getElementById("bgColor").value = savedStyles.bgColor;
     }
     if (savedStyles.linkColor) {
-      document.getElementById('linkColor').value = savedStyles.linkColor;
+      document.getElementById("linkColor").value = savedStyles.linkColor;
     }
+  }
+
+  // Добавляем метод для получения названия схемы
+  getSchemeName(schemeId) {
+    return this.SCHEME_NAMES[schemeId] || `Неизвестная схема (${schemeId})`;
   }
 }
 
