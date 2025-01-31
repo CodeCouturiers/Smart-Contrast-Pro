@@ -87,16 +87,6 @@ class ContrastManager {
       });
     });
 
-    // Слушатели для чекбоксов научных режимов
-    document.querySelectorAll('.scientific-mode').forEach(checkbox => {
-      checkbox.addEventListener('change', (e) => {
-        const mode = e.target.dataset.mode;
-        const isChecked = e.target.checked;
-        console.log(`ContrastManager: Scientific mode ${mode} changed to: ${isChecked}`);
-        this.handleScientificModeChange(mode, isChecked);
-      });
-    });
-
     // Слушатели для ползунков - только обновляем отображение значений
     document.getElementById("contrast").addEventListener("input", (e) => {
       document.getElementById("contrastValue").textContent =
@@ -702,38 +692,11 @@ class ContrastManager {
     if (savedStyles.linkColor) {
       document.getElementById("linkColor").value = savedStyles.linkColor;
     }
-
-    // Загружаем состояния научных режимов
-    const scientificModes = JSON.parse(localStorage.getItem('scientificModes') || '{}');
-    document.querySelectorAll('.scientific-mode').forEach(checkbox => {
-      const mode = checkbox.dataset.mode;
-      checkbox.checked = scientificModes[mode] || false;
-    });
   }
 
   // Добавляем метод для получения названия схемы
   getSchemeName(schemeId) {
     return this.SCHEME_NAMES[schemeId] || `Неизвестная схема (${schemeId})`;
-  }
-
-  // Добавляем новый метод для обработки научных режимов
-  handleScientificModeChange(mode, enabled) {
-    console.log(`ContrastManager: Handling scientific mode change - ${mode}: ${enabled}`);
-
-    const scientificModes = JSON.parse(localStorage.getItem('scientificModes') || '{}');
-    scientificModes[mode] = enabled;
-    localStorage.setItem('scientificModes', JSON.stringify(scientificModes));
-
-    // Применяем комбинацию режимов
-    const currentScheme = this.getCurrentScheme();
-    this.updateUI();
-
-    // Отправляем обновленные настройки
-    chrome.runtime.sendMessage({
-      action: "updateTabs",
-      scheme: currentScheme,
-      scientificModes: scientificModes
-    });
   }
 }
 
