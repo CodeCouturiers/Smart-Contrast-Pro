@@ -7,6 +7,14 @@ class ContrastManager {
       toggle: navigator.platform.includes("Mac") ? "⌘+Shift+F11" : "Shift+F11",
       scheme: navigator.platform.includes("Mac") ? "⌘+Shift+F12" : "Shift+F12",
     };
+
+    // Кэш для часто используемых значений
+    this.cache = {
+      enabled: null,
+      defaultScheme: null,
+      siteSchemes: null
+    };
+
     console.log("ContrastManager: Shortcuts configured:", this.shortcuts);
 
     // Константы для схем контраста
@@ -220,24 +228,48 @@ class ContrastManager {
     document.documentElement.setAttribute("hc", hcValue);
   }
 
-  // Утилиты для работы с localStorage
+  // Оптимизированные методы работы с кэшем
+  clearCache() {
+    this.cache = {
+      enabled: null,
+      defaultScheme: null,
+      siteSchemes: null
+    };
+  }
+
   getEnabled() {
-    const enabled = localStorage.getItem("enabled") !== "false";
-    console.log("ContrastManager: Getting enabled state:", enabled);
-    return enabled;
+    if (this.cache.enabled === null) {
+      this.cache.enabled = localStorage.getItem("enabled") !== "false";
+      console.log("ContrastManager: Getting enabled state:", this.cache.enabled);
+    }
+    return this.cache.enabled;
   }
 
   setEnabled(enabled) {
     console.log("ContrastManager: Setting enabled state:", enabled);
     localStorage.setItem("enabled", enabled);
+    this.cache.enabled = enabled;
   }
 
   getDefaultScheme() {
-    const scheme = localStorage.getItem('scheme');
-    // Если схема не установлена или некорректна, возвращаем 3 (стандартная схема)
-    const result = (scheme !== null && scheme >= 0 && scheme <= 5) ? parseInt(scheme) : 3;
-    console.log('ContrastManager: Getting default scheme:', result);
-    return result;
+    if (this.cache.defaultScheme === null) {
+      const scheme = localStorage.getItem('scheme');
+      this.cache.defaultScheme = (scheme !== null && scheme >= 0 && scheme <= 5) ? parseInt(scheme) : 3;
+      console.log('ContrastManager: Getting default scheme:', this.cache.defaultScheme);
+    }
+    return this.cache.defaultScheme;
+  }
+
+  getSiteSchemes() {
+    if (this.cache.siteSchemes === null) {
+      try {
+        this.cache.siteSchemes = JSON.parse(localStorage.getItem('siteschemes') || '{}');
+      } catch (error) {
+        console.error('ContrastManager: Error parsing site schemes:', error);
+        this.cache.siteSchemes = {};
+      }
+    }
+    return this.cache.siteSchemes;
   }
 
   getSiteScheme(site) {
@@ -245,24 +277,19 @@ class ContrastManager {
       return this.getDefaultScheme();
     }
 
-    try {
-      const siteSchemes = JSON.parse(localStorage.getItem('siteschemes') || '{}');
-      const scheme = siteSchemes[site];
+    const siteSchemes = this.getSiteSchemes();
+    const scheme = siteSchemes[site];
 
-      // Проверяем, что схема существует и валидна
-      if (scheme !== undefined && scheme >= 0 && scheme <= 5) {
-        console.log(`ContrastManager: Site scheme for ${site}: ${scheme}`);
-        return parseInt(scheme);
-      }
-
-      // Если схема невалидна, возвращаем схему по умолчанию
-      const defaultScheme = this.getDefaultScheme();
-      console.log(`ContrastManager: Using default scheme for ${site}: ${defaultScheme}`);
-      return defaultScheme;
-    } catch (error) {
-      console.error(`ContrastManager: Error getting site scheme for ${site}:`, error);
-      return this.getDefaultScheme();
+    // Проверяем, что схема существует и валидна
+    if (scheme !== undefined && scheme >= 0 && scheme <= 5) {
+      console.log(`ContrastManager: Site scheme for ${site}: ${scheme}`);
+      return parseInt(scheme);
     }
+
+    // Если схема невалидна, возвращаем схему по умолчанию
+    const defaultScheme = this.getDefaultScheme();
+    console.log(`ContrastManager: Using default scheme for ${site}: ${defaultScheme}`);
+    return defaultScheme;
   }
 
   setSiteScheme(site, scheme) {
@@ -272,11 +299,10 @@ class ContrastManager {
     );
 
     try {
-      const siteSchemes = JSON.parse(
-        localStorage.getItem("siteschemes") || "{}"
-      );
+      const siteSchemes = this.getSiteSchemes();
       siteSchemes[site] = scheme;
       localStorage.setItem("siteschemes", JSON.stringify(siteSchemes));
+      this.cache.siteSchemes = siteSchemes;
       console.log(`ContrastManager: Successfully updated scheme for ${site}`);
     } catch (error) {
       console.error(`ContrastManager: Failed to update scheme for ${site}:`, error);
@@ -315,6 +341,7 @@ class ContrastManager {
       } else {
         console.log("ContrastManager: Updating default scheme");
         localStorage.setItem("scheme", value);
+        this.cache.defaultScheme = value;
       }
 
       console.log(`ContrastManager: Scheme transition completed: ${oldScheme} → ${value}`);
@@ -337,7 +364,6 @@ class ContrastManager {
       });
     } catch (error) {
       console.error(`ContrastManager: Failed to change scheme:`, error);
-      // Восстанавливаем предыдущую схему в случае ошибки
       this.handleSchemeError(oldScheme);
     }
   }
@@ -414,7 +440,7 @@ class ContrastManager {
     const currentSettings = {
       scheme: this.getCurrentScheme(),
       styles: JSON.parse(localStorage.getItem('customStyles') || '{}'),
-      siteSchemes: JSON.parse(localStorage.getItem('siteschemes') || '{}')
+      siteSchemes: this.getSiteSchemes()
     };
 
     console.log('ContrastManager: Current settings before reset:', currentSettings);
@@ -426,6 +452,9 @@ class ContrastManager {
       console.log(`ContrastManager: Removing ${key} from localStorage`);
       localStorage.removeItem(key);
     });
+
+    // Очищаем кэш
+    this.clearCache();
 
     // Устанавливаем начальные значения
     const defaultStyles = {
