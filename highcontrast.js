@@ -99,10 +99,21 @@ class HighContrastManager {
         oldStyle.remove();
       }
 
+      // Добавляем класс для всей страницы
+      document.documentElement.classList.add('high-contrast-enabled');
+
       this.updateExtraElements();
       this.updateHtmlAttributes(html);
       this.triggerRepaint();
+
+      // Принудительно обновляем стили для научных режимов
+      if (this.scheme >= 6) {
+        document.body.style.filter = 'none';
+        document.body.offsetHeight; // Форсируем repaint
+        this.updateExtraElements();
+      }
     } else {
+      document.documentElement.classList.remove('high-contrast-enabled');
       this.disableHighContrast(html);
     }
   }
@@ -223,38 +234,102 @@ class HighContrastManager {
   // Шаблоны и контент
   getCssTemplate() {
     return `
-            /* Базовые стили для всех схем */
-            html[hc] {
-                filter: url(#hc_extension_off) !important;
-            }
+        /* Базовые стили для всех схем */
+        html[hc] {
+            filter: url(#hc_extension_off) !important;
+        }
 
-            /* Схема 1: Резкий контраст */
-            html[hc="a1"] {
-                filter: url(#hc_extension_high_contrast) !important;
-                background: white !important;
-            }
+        /* Схема 1: Резкий контраст */
+        html[hc="a1"] {
+            filter: url(#hc_extension_high_contrast) !important;
+            background: white !important;
+        }
 
-            /* Схема 2: Оттенки серого */
-            html[hc="a2"] {
-                filter: url(#hc_extension_grayscale) !important;
-            }
+        /* Схема 2: Оттенки серого */
+        html[hc="a2"] {
+            filter: url(#hc_extension_grayscale) !important;
+        }
 
-            /* Схема 3: Инверсия цвета */
-            html[hc="a3"] {
-                filter: url(#hc_extension_invert) !important;
-            }
+        /* Схема 3: Инверсия цвета */
+        html[hc="a3"] {
+            filter: url(#hc_extension_invert) !important;
+        }
 
-            /* Схема 4: Негатив */
-            html[hc="a4"] {
-                filter: url(#hc_extension_invert_grayscale) !important;
-            }
+        /* Схема 4: Негатив */
+        html[hc="a4"] {
+            filter: url(#hc_extension_invert_grayscale) !important;
+        }
 
-            /* Схема 5: Желтый на черном */
-            html[hc="a5"] {
-                filter: url(#hc_extension_yellow_on_black) !important;
-                background: black !important;
-            }
-        `;
+        /* Схема 5: Желтый на черном */
+        html[hc="a5"] {
+            filter: url(#hc_extension_yellow_on_black) !important;
+            background: black !important;
+        }
+
+        /* Научные режимы */
+        html[hc="a6"] {
+            filter: brightness(100%) contrast(100%)
+                    sepia(100%) hue-rotate(295deg)
+                    saturate(60%) brightness(120%) !important;
+            -webkit-filter: brightness(100%) contrast(100%)
+                           sepia(100%) hue-rotate(295deg)
+                           saturate(60%) brightness(120%) !important;
+        }
+
+        html[hc="a7"] {
+            filter: brightness(100%) contrast(100%)
+                    sepia(100%) hue-rotate(320deg)
+                    saturate(85%) brightness(90%) !important;
+            -webkit-filter: brightness(100%) contrast(100%)
+                           sepia(100%) hue-rotate(320deg)
+                           saturate(85%) brightness(90%) !important;
+        }
+
+        html[hc="a8"] {
+            filter: brightness(100%) contrast(100%)
+                    sepia(100%) hue-rotate(180deg)
+                    saturate(50%) brightness(110%) !important;
+            -webkit-filter: brightness(100%) contrast(100%)
+                           sepia(100%) hue-rotate(180deg)
+                           saturate(50%) brightness(110%) !important;
+        }
+
+        html[hc="a9"] {
+            filter: contrast(120%) brightness(105%) saturate(90%) !important;
+            -webkit-filter: contrast(120%) brightness(105%) saturate(90%) !important;
+            background-color: #f8f9fa !important;
+            color: #000000 !important;
+        }
+
+        html[hc="a9"] * {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Open Sans', sans-serif !important;
+            letter-spacing: 0.03em !important;
+            line-height: 1.5 !important;
+            text-shadow: none !important;
+        }
+
+        html[hc="a10"] {
+            filter: brightness(80%) sepia(30%)
+                    hue-rotate(320deg) saturate(40%) !important;
+            -webkit-filter: brightness(80%) sepia(30%)
+                           hue-rotate(320deg) saturate(40%) !important;
+            background-color: #1a0f0f !important;
+            color: #ff4d4d !important;
+        }
+
+        html[hc="a10"] * {
+            text-shadow: none !important;
+        }
+
+        /* Применяем стили ко всем элементам для лучшей совместимости */
+        html[hc="a6"] *,
+        html[hc="a7"] *,
+        html[hc="a8"] *,
+        html[hc="a9"] *,
+        html[hc="a10"] * {
+            background-color: transparent !important;
+        }
+    `;
   }
 
   getSvgContent() {
@@ -313,6 +388,53 @@ class HighContrastManager {
                             0 0 0 0 0
                             0 0 0 1 0"/>
                     </filter>
+
+                    <!-- Научные режимы -->
+                    <filter id="hc_extension_deuteranopia">
+                        <feColorMatrix type="matrix" values="
+                            0.625 0.375 0 0 0
+                            0.7 0.3 0 0 0
+                            0 0.3 0.7 0 0
+                            0 0 0 1 0"/>
+                    </filter>
+
+                    <filter id="hc_extension_protanopia">
+                        <feColorMatrix type="matrix" values="
+                            0.567 0.433 0 0 0
+                            0.558 0.442 0 0 0
+                            0 0.242 0.758 0 0
+                            0 0 0 1 0"/>
+                    </filter>
+
+                    <filter id="hc_extension_tritanopia">
+                        <feColorMatrix type="matrix" values="
+                            0.95 0.05 0 0 0
+                            0 0.433 0.567 0 0
+                            0 0.475 0.525 0 0
+                            0 0 0 1 0"/>
+                    </filter>
+
+                    <filter id="hc_extension_high_legibility">
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="1.2"/>
+                            <feFuncG type="linear" slope="1.2"/>
+                            <feFuncB type="linear" slope="1.2"/>
+                        </feComponentTransfer>
+                        <feColorMatrix type="saturate" values="0.9"/>
+                    </filter>
+
+                    <filter id="hc_extension_night_vision">
+                        <feColorMatrix type="matrix" values="
+                            0.299 0.587 0.114 0 0
+                            0.299 0.587 0.114 0 0
+                            0.299 0.587 0.114 0 0
+                            0 0 0 1 0"/>
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="0.8" intercept="0.2"/>
+                            <feFuncG type="linear" slope="0.4" intercept="0"/>
+                            <feFuncB type="linear" slope="0.4" intercept="0"/>
+                        </feComponentTransfer>
+                    </filter>
                 </defs>
             </svg>
         `;
@@ -321,95 +443,3 @@ class HighContrastManager {
 
 // Инициализация менеджера высокого контраста
 new HighContrastManager();
-
-// Функция для применения стилей контраста
-function applyHighContrast(scheme) {
-    // Удаляем предыдущие стили
-    document.documentElement.removeAttribute('hc');
-    document.body.classList.remove('high-contrast-enabled');
-
-    // Применяем новые стили
-    if (scheme) {
-        document.documentElement.setAttribute('hc', `a${scheme}`);
-        document.body.classList.add('high-contrast-enabled');
-
-        // Добавляем стили для научных режимов
-        const styles = `
-            /* Дейтеранопия */
-            html[hc="a6"] {
-                filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="deuteranopia"><feColorMatrix type="matrix" values="0.625 0.375 0 0 0 0.7 0.3 0 0 0 0 0.3 0.7 0 0 0 0 0 1 0"/></filter></svg>#deuteranopia');
-            }
-
-            /* Протанопия */
-            html[hc="a7"] {
-                filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="protanopia"><feColorMatrix type="matrix" values="0.567 0.433 0 0 0 0.558 0.442 0 0 0 0 0.242 0.758 0 0 0 0 0 1 0"/></filter></svg>#protanopia');
-            }
-
-            /* Тританопия */
-            html[hc="a8"] {
-                filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="tritanopia"><feColorMatrix type="matrix" values="0.95 0.05 0 0 0 0 0.433 0.567 0 0 0 0.475 0.525 0 0 0 0 0 1 0"/></filter></svg>#tritanopia');
-            }
-
-            /* Повышенная читаемость */
-            html[hc="a9"] {
-                background-color: #f8f9fa !important;
-                color: #000000 !important;
-                filter: contrast(120%) brightness(105%) saturate(90%);
-            }
-
-            html[hc="a9"] * {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Open Sans', sans-serif !important;
-                letter-spacing: 0.03em !important;
-                line-height: 1.5 !important;
-                text-shadow: none !important;
-            }
-
-            /* Ночное зрение */
-            html[hc="a10"] {
-                filter: brightness(80%) sepia(30%) hue-rotate(320deg) saturate(40%);
-                background-color: #1a0f0f !important;
-                color: #ff4d4d !important;
-            }
-
-            html[hc="a10"] * {
-                text-shadow: none !important;
-            }
-        `;
-
-        // Добавляем стили на страницу
-        const styleSheet = document.createElement('style');
-        styleSheet.id = 'high-contrast-scientific-styles';
-        styleSheet.textContent = styles;
-        document.head.appendChild(styleSheet);
-    }
-}
-
-// Слушаем сообщения от popup.js и background.js
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    console.log('Received message:', request);
-
-    if (request.action === 'updateTabs') {
-        applyHighContrast(request.scheme);
-    }
-
-    if (request.enabled !== undefined) {
-        if (request.enabled) {
-            applyHighContrast(request.scheme);
-        } else {
-            // Отключаем все стили
-            document.documentElement.removeAttribute('hc');
-            document.body.classList.remove('high-contrast-enabled');
-            const styleSheet = document.getElementById('high-contrast-scientific-styles');
-            if (styleSheet) {
-                styleSheet.remove();
-            }
-        }
-    }
-});
-
-// Применяем сохраненные настройки при загрузке страницы
-chrome.storage.local.get(['enabled', 'scheme'], (result) => {
-    if (result.enabled) {
-        applyHighContrast(result.scheme);
-    }
-});
