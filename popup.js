@@ -339,19 +339,31 @@ class ContrastManager {
     const linkColor = document.getElementById('linkColor').value;
 
     const customStyles = {
-      contrast,
-      brightness,
-      textColor,
-      bgColor,
-      linkColor
+        contrast,
+        brightness,
+        textColor,
+        bgColor,
+        linkColor,
+        enabled: true // Добавляем флаг активации
     };
 
     console.log('ContrastManager: New custom styles:', customStyles);
     localStorage.setItem('customStyles', JSON.stringify(customStyles));
-    this.updateUI();
+
+    // Отправляем сообщение для обновления всех вкладок с новыми стилями
     chrome.runtime.sendMessage({
-      action: 'updateTabs',
-      customStyles
+        action: 'updateTabs',
+        customStyles: customStyles
+    });
+
+    // Принудительно обновляем текущую вкладку
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]) {
+            chrome.tabs.sendMessage(tabs[0].id, {
+                enabled: true,
+                customStyles: customStyles
+            });
+        }
     });
   }
 

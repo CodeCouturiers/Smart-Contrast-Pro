@@ -22,7 +22,10 @@ class HighContrastManager {
   setupMessageListener() {
     chrome.runtime.onMessage.addListener((request) => {
       if (request.customStyles) {
+        console.log('Received custom styles:', request.customStyles);
         this.customStyles = request.customStyles;
+        this.enabled = true;
+        this.update();
       }
       if (this.enabled !== request.enabled || this.scheme !== request.scheme) {
         this.enabled = request.enabled;
@@ -90,6 +93,12 @@ class HighContrastManager {
     const html = document.documentElement;
 
     if (this.enabled) {
+      // Удаляем старый стиль, чтобы применить новые настройки
+      const oldStyle = document.getElementById("hc_style");
+      if (oldStyle) {
+        oldStyle.remove();
+      }
+
       this.updateExtraElements();
       this.updateHtmlAttributes(html);
       this.triggerRepaint();
@@ -143,14 +152,16 @@ class HighContrastManager {
       let css = this.getCssTemplate().replace(/#/g, baseUrl + "#");
 
       // Применяем пользовательские стили
-      if (this.customStyles) {
+      if (this.customStyles && this.customStyles.enabled) {
         css += `
-          .high-contrast-enabled {
+          html[hc] {
             filter: contrast(${this.customStyles.contrast}%) brightness(${this.customStyles.brightness}%) !important;
+          }
+          html[hc] body {
             background-color: ${this.customStyles.bgColor} !important;
             color: ${this.customStyles.textColor} !important;
           }
-          .high-contrast-enabled a {
+          html[hc] a {
             color: ${this.customStyles.linkColor} !important;
           }
         `;

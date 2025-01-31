@@ -145,12 +145,13 @@ class HighContrastBackground {
 
   async updateAllTabs() {
     try {
-      // Используем тот же callback-стиль для chrome.windows.getAll
       const windows = await new Promise((resolve) => {
         chrome.windows.getAll({ populate: true }, (windows) => {
           resolve(windows);
         });
       });
+
+      const customStyles = JSON.parse(localStorage.getItem('customStyles') || '{}');
 
       for (const window of windows) {
         if (window.tabs) {
@@ -161,6 +162,7 @@ class HighContrastBackground {
                 await chrome.tabs.sendMessage(tab.id, {
                   enabled: this.getEnabled(),
                   scheme: this.getSiteScheme(site),
+                  customStyles: customStyles
                 });
               } catch (tabError) {
                 console.error(`Failed to update tab ${tab.id}:`, tabError);
@@ -170,7 +172,7 @@ class HighContrastBackground {
         }
       }
     } catch (error) {
-      console.error("Error updating tabs:", error);
+      console.error('Error updating tabs:', error);
     }
   }
 
