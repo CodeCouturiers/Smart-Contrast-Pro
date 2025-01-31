@@ -66,6 +66,7 @@ class HighContrastManager {
       }
     };
 
+    console.log('HighContrastManager: Initializing with default scheme:', this.scheme);
     this.init();
   }
 
@@ -82,15 +83,28 @@ class HighContrastManager {
 
   setupMessageListener() {
     chrome.runtime.onMessage.addListener((request) => {
+      console.log('HighContrastManager: Received message:', request);
+
       if (request.customStyles) {
-        console.log('Received custom styles:', request.customStyles);
+        console.log('HighContrastManager: Received custom styles:', request.customStyles);
         this.customStyles = request.customStyles;
         this.enabled = true;
         this.update();
       }
-      if (this.enabled !== request.enabled || this.scheme !== request.scheme) {
+
+      const schemeChanged = this.scheme !== request.scheme;
+      const enabledChanged = this.enabled !== request.enabled;
+
+      if (enabledChanged || schemeChanged) {
+        console.log('HighContrastManager: State change detected', {
+          'enabled': `${this.enabled} → ${request.enabled}`,
+          'scheme': `${this.scheme} → ${request.scheme}`
+        });
+
         this.enabled = request.enabled;
-        this.scheme = request.scheme;
+        if (request.scheme !== undefined && request.scheme !== null) {
+          this.scheme = this.validateScheme(request.scheme);
+        }
         this.update();
       }
     });
@@ -111,9 +125,31 @@ class HighContrastManager {
   }
 
   requestInitialState() {
+    console.log('HighContrastManager: Requesting initial state...');
+
     chrome.runtime.sendMessage({ action: "getInitialState" }, (response) => {
-      this.enabled = response.enabled;
-      this.scheme = response.scheme;
+      console.log('HighContrastManager: Received initial state:', response);
+
+      if (response && typeof response === 'object') {
+        this.enabled = !!response.enabled;
+
+        if (response.scheme !== undefined && response.scheme !== null) {
+          this.scheme = this.validateScheme(response.scheme);
+        } else {
+          console.warn('HighContrastManager: No scheme in response, using default');
+          this.scheme = 0;
+        }
+
+        console.log('HighContrastManager: Initial state set:', {
+          enabled: this.enabled,
+          scheme: this.scheme
+        });
+      } else {
+        console.warn('HighContrastManager: Invalid response from background script, using defaults');
+        this.enabled = false;
+        this.scheme = 0;
+      }
+
       this.update();
     });
   }
@@ -146,7 +182,13 @@ class HighContrastManager {
   }
 
   update() {
+    console.log('HighContrastManager: Updating with state:', {
+      enabled: this.enabled,
+      scheme: this.scheme
+    });
+
     if (!document.body) {
+      console.log('HighContrastManager: No body element, delaying update');
       setTimeout(() => this.update(), 100);
       return;
     }
@@ -154,29 +196,25 @@ class HighContrastManager {
     const html = document.documentElement;
 
     if (this.enabled) {
-      // Очищаем все старые стили
+      console.log('HighContrastManager: Applying enabled state with scheme:', this.scheme);
       this.clearAllStyles();
-
-      // Добавляем класс для всей страницы
       document.documentElement.classList.add('high-contrast-enabled');
-
-      // Применяем выбранную схему
       this.applyColorScheme(this.scheme);
       this.updateExtraElements();
       this.updateHtmlAttributes(html);
       this.triggerRepaint();
     } else {
+      console.log('HighContrastManager: Applying disabled state');
       document.documentElement.classList.remove('high-contrast-enabled');
       this.disableHighContrast(html);
     }
   }
 
   applyColorScheme(schemeId) {
-    const scheme = this.COLOR_SCHEMES[schemeId];
-    if (!scheme) {
-      console.error('Invalid color scheme:', schemeId);
-      return;
-    }
+    const validSchemeId = this.validateScheme(schemeId);
+    const scheme = this.COLOR_SCHEMES[validSchemeId];
+
+    console.log('Applying color scheme:', validSchemeId, scheme);
 
     const style = document.getElementById('hc_style') || document.createElement('style');
     style.id = 'hc_style';
@@ -491,6 +529,30 @@ class HighContrastManager {
                 </defs>
             </svg>
         `;
+  }
+
+  validateScheme(scheme) {
+    console.log('HighContrastManager: Validating scheme:', scheme);
+
+    if (scheme === undefined || scheme === null) {
+      console.warn('HighContrastManager: Scheme is undefined or null, using default (0)');
+      return 0;
+    }
+
+    const schemeId = parseInt(scheme);
+
+    if (isNaN(schemeId)) {
+      console.warn(`HighContrastManager: Invalid scheme format: ${scheme}, using default (0)`);
+      return 0;
+    }
+
+    if (this.COLOR_SCHEMES.hasOwnProperty(schemeId)) {
+      console.log(`HighContrastManager: Scheme ${schemeId} is valid`);
+      return schemeId;
+    }
+
+    console.warn(`HighContrastManager: Invalid scheme value: ${scheme}, using default (0)`);
+    return 0;
   }
 }
 
