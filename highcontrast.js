@@ -198,13 +198,100 @@ class HighContrastManager {
 
     // Шаблоны и контент
     getCssTemplate() {
-        // Здесь должен быть ваш CSS шаблон
-        return `/* Ваш CSS шаблон */`;
+        return `
+            /* Базовые стили для всех схем */
+            html[hc] {
+                filter: url(#hc_extension_off) !important;
+            }
+
+            /* Схема 1: Резкий контраст */
+            html[hc="a1"] {
+                filter: url(#hc_extension_high_contrast) !important;
+                background: white !important;
+            }
+
+            /* Схема 2: Оттенки серого */
+            html[hc="a2"] {
+                filter: url(#hc_extension_grayscale) !important;
+            }
+
+            /* Схема 3: Инверсия цвета */
+            html[hc="a3"] {
+                filter: url(#hc_extension_invert) !important;
+            }
+
+            /* Схема 4: Негатив */
+            html[hc="a4"] {
+                filter: url(#hc_extension_invert_grayscale) !important;
+            }
+
+            /* Схема 5: Желтый на черном */
+            html[hc="a5"] {
+                filter: url(#hc_extension_yellow_on_black) !important;
+                background: black !important;
+            }
+        `;
     }
 
     getSvgContent() {
-        // Здесь должен быть ваш SVG контент
-        return `/* Ваш SVG контент */`;
+        return `
+            <svg xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <filter id="hc_extension_off">
+                        <feComponentTransfer>
+                            <feFuncR type="identity"/>
+                            <feFuncG type="identity"/>
+                            <feFuncB type="identity"/>
+                        </feComponentTransfer>
+                    </filter>
+
+                    <filter id="hc_extension_high_contrast">
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="3" intercept="-1"/>
+                            <feFuncG type="linear" slope="3" intercept="-1"/>
+                            <feFuncB type="linear" slope="3" intercept="-1"/>
+                        </feComponentTransfer>
+                    </filter>
+
+                    <filter id="hc_extension_grayscale">
+                        <feColorMatrix type="matrix" values="
+                            0.2126 0.7152 0.0722 0 0
+                            0.2126 0.7152 0.0722 0 0
+                            0.2126 0.7152 0.0722 0 0
+                            0 0 0 1 0"/>
+                    </filter>
+
+                    <filter id="hc_extension_invert">
+                        <feComponentTransfer>
+                            <feFuncR type="table" tableValues="1 0"/>
+                            <feFuncG type="table" tableValues="1 0"/>
+                            <feFuncB type="table" tableValues="1 0"/>
+                        </feComponentTransfer>
+                    </filter>
+
+                    <filter id="hc_extension_invert_grayscale">
+                        <feColorMatrix type="matrix" values="
+                            0.2126 0.7152 0.0722 0 0
+                            0.2126 0.7152 0.0722 0 0
+                            0.2126 0.7152 0.0722 0 0
+                            0 0 0 1 0"/>
+                        <feComponentTransfer>
+                            <feFuncR type="table" tableValues="1 0"/>
+                            <feFuncG type="table" tableValues="1 0"/>
+                            <feFuncB type="table" tableValues="1 0"/>
+                        </feComponentTransfer>
+                    </filter>
+
+                    <filter id="hc_extension_yellow_on_black">
+                        <feColorMatrix type="matrix" values="
+                            0.3 0.5 0.2 0 0
+                            0.3 0.5 0.2 0 0
+                            0 0 0 0 0
+                            0 0 0 1 0"/>
+                    </filter>
+                </defs>
+            </svg>
+        `;
     }
 }
 
