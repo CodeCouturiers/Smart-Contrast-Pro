@@ -5,11 +5,13 @@
 // Современный модульный подход к управлению контрастом
 class ContrastManager {
     constructor() {
+        console.log('ContrastManager: Initializing...');
         this.site = null;
         this.shortcuts = {
             toggle: navigator.platform.includes('Mac') ? '⌘+Shift+F11' : 'Shift+F11',
             scheme: navigator.platform.includes('Mac') ? '⌘+Shift+F12' : 'Shift+F12'
         };
+        console.log('ContrastManager: Shortcuts configured:', this.shortcuts);
 
         // Константы для схем контраста
         this.SCHEMES = {
@@ -26,14 +28,17 @@ class ContrastManager {
 
     // Инициализация приложения
     async init() {
+        console.log('ContrastManager: Starting initialization...');
         this.initializeI18n();
         this.setupEventListeners();
         await this.getCurrentTab();
         this.updateUI();
+        console.log('ContrastManager: Initialization complete');
     }
 
     // Инициализация интернационализации
     initializeI18n() {
+        console.log('ContrastManager: Initializing i18n...');
         document.querySelectorAll('[i18n-content]').forEach(element => {
             const msg = element.getAttribute('i18n-content');
             element.textContent = chrome.i18n.getMessage(msg);
@@ -42,23 +47,36 @@ class ContrastManager {
 
     // Настройка слушателей событий
     setupEventListeners() {
-        // Использование делегирования событий для радио кнопок
+        console.log('ContrastManager: Setting up event listeners...');
+
         document.querySelectorAll('input[name="scheme"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
                 if (e.target.checked) {
+                    console.log('ContrastManager: Radio button changed to:', e.target.value);
                     this.handleSchemeChange(parseInt(e.target.value));
                 }
             });
         });
 
-        // Кнопки управления
-        document.getElementById('toggle').addEventListener('click', () => this.toggleContrast());
-        document.getElementById('make_default').addEventListener('click', () => this.makeDefault());
-        document.getElementById('forget').addEventListener('click', () => this.resetSettings());
+        document.getElementById('toggle').addEventListener('click', () => {
+            console.log('ContrastManager: Toggle button clicked');
+            this.toggleContrast();
+        });
+
+        document.getElementById('make_default').addEventListener('click', () => {
+            console.log('ContrastManager: Make default button clicked');
+            this.makeDefault();
+        });
+
+        document.getElementById('forget').addEventListener('click', () => {
+            console.log('ContrastManager: Forget button clicked');
+            this.resetSettings();
+        });
     }
 
     // Получение текущей вкладки
     async getCurrentTab() {
+        console.log('ContrastManager: Getting current tab...');
         try {
             await new Promise((resolve) => {
                 chrome.tabs.query({
@@ -67,20 +85,23 @@ class ContrastManager {
                 }, (tabs) => {
                     if (tabs && tabs.length > 0) {
                         const tab = tabs[0];
+                        console.log('ContrastManager: Current tab:', tab.url);
                         if (this.isDisallowedUrl(tab.url)) {
+                            console.log('ContrastManager: URL is disallowed, setting up default mode');
                             this.setupDefaultMode();
                         } else {
+                            console.log('ContrastManager: Setting up site mode for:', tab.url);
                             this.setupSiteMode(tab.url);
                         }
                     } else {
-                        console.warn('No active tab found');
+                        console.warn('ContrastManager: No active tab found');
                         this.setupDefaultMode();
                     }
                     resolve();
                 });
             });
         } catch (error) {
-            console.error('Error getting current tab:', error);
+            console.error('ContrastManager: Error getting current tab:', error);
             this.setupDefaultMode();
         }
     }
@@ -108,15 +129,18 @@ class ContrastManager {
 
     // Обновление UI
     updateUI() {
+        console.log('ContrastManager: Updating UI...');
         const isEnabled = this.getEnabled();
-        document.body.classList.toggle('disabled', !isEnabled);
+        console.log('ContrastManager: Extension is enabled:', isEnabled);
 
+        document.body.classList.toggle('disabled', !isEnabled);
         this.updateTitle(isEnabled);
         this.updateToggleButton(isEnabled);
         this.updateSubControls(isEnabled);
         this.updateSchemeSelection();
         this.updateDocumentAttributes();
 
+        console.log('ContrastManager: Sending updateTabs message');
         chrome.runtime.sendMessage({ action: 'updateTabs' });
     }
 
@@ -167,69 +191,88 @@ class ContrastManager {
 
     // Утилиты для работы с localStorage
     getEnabled() {
-        return localStorage.getItem('enabled') !== 'false';
+        const enabled = localStorage.getItem('enabled') !== 'false';
+        console.log('ContrastManager: Getting enabled state:', enabled);
+        return enabled;
     }
 
     setEnabled(enabled) {
+        console.log('ContrastManager: Setting enabled state:', enabled);
         localStorage.setItem('enabled', enabled);
     }
 
     getDefaultScheme() {
         const scheme = localStorage.getItem('scheme');
-        return scheme >= 0 && scheme <= 5 ? parseInt(scheme) : 3;
+        const result = scheme >= 0 && scheme <= 5 ? parseInt(scheme) : 3;
+        console.log('ContrastManager: Getting default scheme:', result);
+        return result;
     }
 
     getSiteScheme(site) {
+        console.log('ContrastManager: Getting scheme for site:', site);
         try {
             const siteSchemes = JSON.parse(localStorage.getItem('siteschemes') || '{}');
             const scheme = siteSchemes[site];
-            return scheme >= 0 && scheme <= 5 ? parseInt(scheme) : this.getDefaultScheme();
-        } catch {
+            const result = scheme >= 0 && scheme <= 5 ? parseInt(scheme) : this.getDefaultScheme();
+            console.log('ContrastManager: Site scheme:', result);
+            return result;
+        } catch (error) {
+            console.error('ContrastManager: Error getting site scheme:', error);
             return this.getDefaultScheme();
         }
     }
 
     setSiteScheme(site, scheme) {
+        console.log('ContrastManager: Setting scheme for site:', site, 'Scheme:', scheme);
         try {
             const siteSchemes = JSON.parse(localStorage.getItem('siteschemes') || '{}');
             siteSchemes[site] = scheme;
             localStorage.setItem('siteschemes', JSON.stringify(siteSchemes));
+            console.log('ContrastManager: Successfully saved site scheme');
         } catch (error) {
-            console.error('Error saving site scheme:', error);
+            console.error('ContrastManager: Error saving site scheme:', error);
         }
     }
 
     // Обработчики действий пользователя
     toggleContrast() {
-        this.setEnabled(!this.getEnabled());
+        const currentState = this.getEnabled();
+        console.log('ContrastManager: Toggling contrast. Current state:', currentState);
+        this.setEnabled(!currentState);
         this.updateUI();
     }
 
     handleSchemeChange(value) {
+        console.log('ContrastManager: Handling scheme change. Value:', value, 'Site:', this.site);
         if (this.site) {
+            console.log('ContrastManager: Setting site-specific scheme');
             this.setSiteScheme(this.site, value);
         } else {
+            console.log('ContrastManager: Setting default scheme');
             localStorage.setItem('scheme', value);
         }
         this.updateUI();
-        // Отправляем сообщение для обновления всех вкладок
         chrome.runtime.sendMessage({ action: 'updateTabs' });
     }
 
     makeDefault() {
         if (this.site) {
-            localStorage.setItem('scheme', this.getSiteScheme(this.site));
+            const currentScheme = this.getSiteScheme(this.site);
+            console.log('ContrastManager: Making current scheme default:', currentScheme);
+            localStorage.setItem('scheme', currentScheme);
             this.updateUI();
         }
     }
 
     resetSettings() {
+        console.log('ContrastManager: Resetting all site settings');
         localStorage.setItem('siteschemes', '{}');
         this.updateUI();
     }
 
     // Утилитарный метод для установки значения radio кнопок
     setRadioValue(name, value) {
+        console.log('ContrastManager: Setting radio value:', name, value);
         const radios = document.querySelectorAll(`input[name="${name}"]`);
         radios.forEach(radio => {
             radio.checked = radio.value === value.toString();
