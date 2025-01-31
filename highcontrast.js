@@ -7,74 +7,74 @@ class HighContrastManager {
 
     // Определяем все цветовые схемы
     this.COLOR_SCHEMES = {
-      0: {
-        // Нормальный контраст
-        filter: "url(#hc_extension_off)",
-        background: "inherit",
+      0: { // Нормальный контраст
+        type: 'svg',
+        filter: 'url(#hc_extension_off)',
+        background: 'inherit'
       },
-      1: {
-        // Резкий контраст
-        filter: "url(#hc_extension_high_contrast)",
-        background: "white",
+      1: { // Резкий контраст
+        type: 'svg',
+        filter: 'url(#hc_extension_high_contrast)',
+        background: 'white'
       },
-      2: {
-        // Оттенки серого
-        filter: "url(#hc_extension_grayscale)",
-        background: "inherit",
+      2: { // Оттенки серого
+        type: 'svg',
+        filter: 'url(#hc_extension_grayscale)',
+        background: 'inherit'
       },
-      3: {
-        // Инверсия цвета
-        filter: "url(#hc_extension_invert)",
-        background: "inherit",
+      3: { // Инверсия цвета
+        type: 'svg',
+        filter: 'url(#hc_extension_invert)',
+        background: 'inherit'
       },
-      4: {
-        // Негатив
-        filter: "url(#hc_extension_invert_grayscale)",
-        background: "inherit",
+      4: { // Негатив
+        type: 'svg',
+        filter: 'url(#hc_extension_invert_grayscale)',
+        background: 'inherit'
       },
-      5: {
-        // Желтый на черном
-        filter: "url(#hc_extension_yellow_on_black)",
-        background: "black",
+      5: { // Желтый на черном
+        type: 'svg',
+        filter: 'url(#hc_extension_yellow_on_black)',
+        background: 'black'
       },
-      6: {
-        // Дейтеранопия
-        cssFilter: "grayscale(0.5) sepia(0.5) hue-rotate(320deg)",
-        textColor: "#ffffff",
-        background: "#000033",
-        linkColor: "#00ffff",
+      6: { // Дейтеранопия
+        type: 'css',
+        filter: 'grayscale(0.5) sepia(0.5) hue-rotate(320deg)',
+        textColor: '#ffffff',
+        background: '#000033',
+        linkColor: '#00ffff'
       },
-      7: {
-        // Протанопия
-        cssFilter: "grayscale(0.6) sepia(0.4) hue-rotate(290deg)",
-        textColor: "#ffffff",
-        background: "#000033",
-        linkColor: "#00ffff",
+      7: { // Протанопия
+        type: 'css',
+        filter: 'grayscale(0.6) sepia(0.4) hue-rotate(290deg)',
+        textColor: '#ffffff',
+        background: '#000033',
+        linkColor: '#00ffff'
       },
-      8: {
-        // Тританопия
-        cssFilter: "grayscale(0.4) sepia(0.6) hue-rotate(220deg)",
-        textColor: "#ffff00",
-        background: "#000066",
-        linkColor: "#00ff00",
+      8: { // Тританопия
+        type: 'css',
+        filter: 'grayscale(0.4) sepia(0.6) hue-rotate(220deg)',
+        textColor: '#ffff00',
+        background: '#000066',
+        linkColor: '#00ff00'
       },
-      9: {
-        // Повышенная читаемость
-        cssFilter: "contrast(110%) brightness(105%)",
-        textColor: "#ffffff",
-        background: "#1a1a1a",
-        linkColor: "#66ff66",
-        fontSize: "110%",
-        lineHeight: "1.5",
-        letterSpacing: "0.5px",
+      9: { // Повышенная читаемость
+        type: 'css',
+        filter: 'contrast(110%) brightness(105%)',
+        textColor: '#ffffff',
+        background: '#1a1a1a',
+        linkColor: '#66ff66',
+        fontSize: '110%',
+        lineHeight: '1.5',
+        letterSpacing: '0.5px'
       },
-      10: {
-        // Ночное зрение
-        cssFilter: "brightness(90%) sepia(30%) hue-rotate(320deg)",
-        textColor: "#ff0000",
-        background: "#000000",
-        linkColor: "#990000",
-      },
+      10: { // Ночное зрение
+        type: 'css',
+        filter: 'brightness(90%) sepia(30%) hue-rotate(320deg)',
+        textColor: '#ff0000',
+        background: '#000000',
+        linkColor: '#990000'
+      }
     };
 
     console.log(
@@ -235,37 +235,34 @@ class HighContrastManager {
     const validSchemeId = this.validateScheme(schemeId);
     const scheme = this.COLOR_SCHEMES[validSchemeId];
 
-    console.log("Applying color scheme:", validSchemeId, scheme);
+    console.log('Applying color scheme:', validSchemeId, scheme);
 
-    const style =
-      document.getElementById("hc_style") || document.createElement("style");
-    style.id = "hc_style";
+    // Очищаем все существующие стили перед применением новых
+    this.clearAllStyles();
 
-    let css = `
-      html {
-        ${scheme.cssFilter ? `filter: ${scheme.cssFilter} !important;` : scheme.filter ? `filter: ${scheme.filter} !important;` : ''}
-        ${
-          scheme.background !== "inherit"
-            ? `background: ${scheme.background} !important;`
-            : ""
-        }
-        ${scheme.textColor ? `color: ${scheme.textColor} !important;` : ""}
-        ${scheme.fontSize ? `font-size: ${scheme.fontSize} !important;` : ""}
-        ${
-          scheme.lineHeight
-            ? `line-height: ${scheme.lineHeight} !important;`
-            : ""
-        }
-        ${
-          scheme.letterSpacing
-            ? `letter-spacing: ${scheme.letterSpacing} !important;`
-            : ""
-        }
-      }
-    `;
+    const style = document.createElement('style');
+    style.id = 'hc_style';
 
-    if (scheme.textColor) {
-      css += `
+    if (scheme.type === 'svg') {
+      // Применяем SVG фильтры
+      style.textContent = `
+        html {
+          filter: ${scheme.filter} !important;
+          ${scheme.background !== 'inherit' ? `background: ${scheme.background} !important;` : ''}
+        }
+      `;
+    } else if (scheme.type === 'css') {
+      // Применяем CSS стили
+      style.textContent = `
+        html {
+          filter: ${scheme.filter} !important;
+          background: ${scheme.background} !important;
+          color: ${scheme.textColor} !important;
+          ${scheme.fontSize ? `font-size: ${scheme.fontSize} !important;` : ''}
+          ${scheme.lineHeight ? `line-height: ${scheme.lineHeight} !important;` : ''}
+          ${scheme.letterSpacing ? `letter-spacing: ${scheme.letterSpacing} !important;` : ''}
+        }
+
         body {
           background-color: ${scheme.background} !important;
           color: ${scheme.textColor} !important;
@@ -274,10 +271,17 @@ class HighContrastManager {
           ${scheme.letterSpacing ? `letter-spacing: ${scheme.letterSpacing} !important;` : ''}
         }
 
+        /* Основные текстовые элементы */
+        p, span, div, li, td, th, h1, h2, h3, h4, h5, h6 {
+          color: ${scheme.textColor} !important;
+        }
+
+        /* Ссылки */
         a, a:visited, a:hover, a:active {
           color: ${scheme.linkColor} !important;
         }
 
+        /* Элементы форм */
         input, textarea, select, button {
           background-color: ${scheme.background} !important;
           color: ${scheme.textColor} !important;
@@ -289,19 +293,18 @@ class HighContrastManager {
           color: ${scheme.background} !important;
         }
 
-        /* Улучшенная читаемость для текстовых элементов */
-        p, span, div, li, td, th, h1, h2, h3, h4, h5, h6 {
-          color: ${scheme.textColor} !important;
+        /* Изображения */
+        img {
+          filter: ${scheme.filter} !important;
         }
 
-        /* Улучшенная контрастность для изображений */
-        img {
-          ${scheme.cssFilter ? `filter: ${scheme.cssFilter} !important;` : ''}
+        /* Дополнительные элементы */
+        iframe, canvas, svg {
+          filter: ${scheme.filter} !important;
         }
       `;
     }
 
-    style.textContent = css;
     document.head.appendChild(style);
   }
 
@@ -313,8 +316,14 @@ class HighContrastManager {
     }
 
     // Сбрасываем фильтры
-    document.documentElement.style.filter = "";
-    document.body.style.filter = "";
+    document.documentElement.style.filter = '';
+    document.body.style.filter = '';
+
+    // Сбрасываем inline стили
+    document.documentElement.style.backgroundColor = '';
+    document.documentElement.style.color = '';
+    document.body.style.backgroundColor = '';
+    document.body.style.color = '';
   }
 
   updateHtmlAttributes(html) {
