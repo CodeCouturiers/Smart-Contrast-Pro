@@ -235,25 +235,57 @@ class HighContrastManager {
     const validSchemeId = this.validateScheme(schemeId);
     const scheme = this.COLOR_SCHEMES[validSchemeId];
 
-    console.log('Applying color scheme:', validSchemeId, scheme);
+    console.group('HighContrastManager: Applying Color Scheme');
+    console.log('Scheme ID:', validSchemeId);
+    console.log('Scheme Type:', scheme.type);
+    console.log('Scheme Config:', scheme);
 
     // Очищаем все существующие стили перед применением новых
     this.clearAllStyles();
 
     const style = document.createElement('style');
     style.id = 'hc_style';
+    let css = '';
 
     if (scheme.type === 'svg') {
-      // Применяем SVG фильтры
-      style.textContent = `
+      console.log('Applying SVG Filter Mode');
+      css = `
         html {
           filter: ${scheme.filter} !important;
           ${scheme.background !== 'inherit' ? `background: ${scheme.background} !important;` : ''}
         }
       `;
     } else if (scheme.type === 'css') {
-      // Применяем CSS стили
-      style.textContent = `
+      console.log('Applying CSS Mode with styles:');
+
+      const htmlStyles = {
+        filter: scheme.filter,
+        background: scheme.background,
+        color: scheme.textColor,
+        fontSize: scheme.fontSize,
+        lineHeight: scheme.lineHeight,
+        letterSpacing: scheme.letterSpacing
+      };
+      console.log('HTML Styles:', htmlStyles);
+
+      const bodyStyles = {
+        backgroundColor: scheme.background,
+        color: scheme.textColor,
+        fontSize: scheme.fontSize,
+        lineHeight: scheme.lineHeight,
+        letterSpacing: scheme.letterSpacing
+      };
+      console.log('Body Styles:', bodyStyles);
+
+      const elementStyles = {
+        textColor: scheme.textColor,
+        linkColor: scheme.linkColor,
+        background: scheme.background,
+        filter: scheme.filter
+      };
+      console.log('Element Styles:', elementStyles);
+
+      css = `
         html {
           filter: ${scheme.filter} !important;
           background: ${scheme.background} !important;
@@ -305,7 +337,45 @@ class HighContrastManager {
       `;
     }
 
+    style.textContent = css;
     document.head.appendChild(style);
+
+    // Проверяем применение стилей
+    setTimeout(() => {
+      console.group('Style Application Check');
+
+      const html = document.documentElement;
+      const body = document.body;
+
+      console.log('Applied HTML Styles:', {
+        filter: getComputedStyle(html).filter,
+        background: getComputedStyle(html).background,
+        color: getComputedStyle(html).color,
+        fontSize: getComputedStyle(html).fontSize,
+        lineHeight: getComputedStyle(html).lineHeight,
+        letterSpacing: getComputedStyle(html).letterSpacing
+      });
+
+      console.log('Applied Body Styles:', {
+        backgroundColor: getComputedStyle(body).backgroundColor,
+        color: getComputedStyle(body).color,
+        fontSize: getComputedStyle(body).fontSize,
+        lineHeight: getComputedStyle(body).lineHeight,
+        letterSpacing: getComputedStyle(body).letterSpacing
+      });
+
+      // Проверяем применение стилей к ссылкам
+      const firstLink = document.querySelector('a');
+      if (firstLink) {
+        console.log('Link Styles:', {
+          color: getComputedStyle(firstLink).color
+        });
+      }
+
+      console.groupEnd();
+    }, 100);
+
+    console.groupEnd();
   }
 
   clearAllStyles() {
