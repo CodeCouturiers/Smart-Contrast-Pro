@@ -39,28 +39,28 @@ class HighContrastManager {
       },
       6: {
         // Дейтеранопия
-        filter: "url(#hc_extension_deuteranopia)",
+        cssFilter: "grayscale(0.5) sepia(0.5) hue-rotate(320deg)",
         textColor: "#ffffff",
         background: "#000033",
         linkColor: "#00ffff",
       },
       7: {
         // Протанопия
-        filter: "url(#hc_extension_protanopia)",
+        cssFilter: "grayscale(0.6) sepia(0.4) hue-rotate(290deg)",
         textColor: "#ffffff",
         background: "#000033",
         linkColor: "#00ffff",
       },
       8: {
         // Тританопия
-        filter: "url(#hc_extension_tritanopia)",
+        cssFilter: "grayscale(0.4) sepia(0.6) hue-rotate(220deg)",
         textColor: "#ffff00",
         background: "#000066",
         linkColor: "#00ff00",
       },
       9: {
         // Повышенная читаемость
-        filter: "url(#hc_extension_high_legibility)",
+        cssFilter: "contrast(110%) brightness(105%)",
         textColor: "#ffffff",
         background: "#1a1a1a",
         linkColor: "#66ff66",
@@ -70,7 +70,7 @@ class HighContrastManager {
       },
       10: {
         // Ночное зрение
-        filter: "url(#hc_extension_night_vision)",
+        cssFilter: "brightness(90%) sepia(30%) hue-rotate(320deg)",
         textColor: "#ff0000",
         background: "#000000",
         linkColor: "#990000",
@@ -243,7 +243,7 @@ class HighContrastManager {
 
     let css = `
       html {
-        filter: ${scheme.filter} !important;
+        ${scheme.cssFilter ? `filter: ${scheme.cssFilter} !important;` : scheme.filter ? `filter: ${scheme.filter} !important;` : ''}
         ${
           scheme.background !== "inherit"
             ? `background: ${scheme.background} !important;`
@@ -269,6 +269,9 @@ class HighContrastManager {
         body {
           background-color: ${scheme.background} !important;
           color: ${scheme.textColor} !important;
+          ${scheme.fontSize ? `font-size: ${scheme.fontSize} !important;` : ''}
+          ${scheme.lineHeight ? `line-height: ${scheme.lineHeight} !important;` : ''}
+          ${scheme.letterSpacing ? `letter-spacing: ${scheme.letterSpacing} !important;` : ''}
         }
 
         a, a:visited, a:hover, a:active {
@@ -284,6 +287,16 @@ class HighContrastManager {
         button:hover {
           background-color: ${scheme.textColor} !important;
           color: ${scheme.background} !important;
+        }
+
+        /* Улучшенная читаемость для текстовых элементов */
+        p, span, div, li, td, th, h1, h2, h3, h4, h5, h6 {
+          color: ${scheme.textColor} !important;
+        }
+
+        /* Улучшенная контрастность для изображений */
+        img {
+          ${scheme.cssFilter ? `filter: ${scheme.cssFilter} !important;` : ''}
         }
       `;
     }
