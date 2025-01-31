@@ -93,29 +93,53 @@ class HighContrastManager {
     const html = document.documentElement;
 
     if (this.enabled) {
-      // Удаляем старый стиль, чтобы применить новые настройки
-      const oldStyle = document.getElementById("hc_style");
-      if (oldStyle) {
-        oldStyle.remove();
-      }
+      // Очищаем все старые стили
+      this.clearAllStyles();
 
       // Добавляем класс для всей страницы
       document.documentElement.classList.add('high-contrast-enabled');
 
-      this.updateExtraElements();
-      this.updateHtmlAttributes(html);
-      this.triggerRepaint();
+      // Применяем научные режимы, если они выбраны
+      if (this.scheme >= 6 && window.HighContrastScientificModes) {
+        const modeMap = {
+          6: 'deuteranopia',
+          7: 'protanopia',
+          8: 'tritanopia',
+          9: 'enhanced_readability',
+          10: 'night_vision'
+        };
 
-      // Принудительно обновляем стили для научных режимов
-      if (this.scheme >= 6) {
-        document.body.style.filter = 'none';
-        document.body.offsetHeight; // Форсируем repaint
+        const modeName = modeMap[this.scheme];
+        if (modeName) {
+          window.HighContrastScientificModes.applyMode(modeName);
+        }
+      } else {
+        // Применяем обычные режимы
         this.updateExtraElements();
+        this.updateHtmlAttributes(html);
       }
+
+      this.triggerRepaint();
     } else {
       document.documentElement.classList.remove('high-contrast-enabled');
       this.disableHighContrast(html);
     }
+  }
+
+  clearAllStyles() {
+    // Удаляем старый стиль
+    const oldStyle = document.getElementById("hc_style");
+    if (oldStyle) {
+      oldStyle.remove();
+    }
+
+    // Удаляем все научные стили
+    const scientificStyles = document.querySelectorAll('style[data-scientific-mode]');
+    scientificStyles.forEach(style => style.remove());
+
+    // Сбрасываем фильтры
+    document.documentElement.style.filter = '';
+    document.body.style.filter = '';
   }
 
   updateHtmlAttributes(html) {
@@ -139,6 +163,9 @@ class HighContrastManager {
   disableHighContrast(html) {
     html.setAttribute("hc", this.mode + "0");
     html.setAttribute("hcx", "0");
+
+    // Очищаем все стили
+    this.clearAllStyles();
 
     setTimeout(() => {
       html.removeAttribute("hc");
@@ -264,70 +291,6 @@ class HighContrastManager {
         html[hc="a5"] {
             filter: url(#hc_extension_yellow_on_black) !important;
             background: black !important;
-        }
-
-        /* Научные режимы */
-        html[hc="a6"] {
-            filter: brightness(100%) contrast(100%)
-                    sepia(100%) hue-rotate(295deg)
-                    saturate(60%) brightness(120%) !important;
-            -webkit-filter: brightness(100%) contrast(100%)
-                           sepia(100%) hue-rotate(295deg)
-                           saturate(60%) brightness(120%) !important;
-        }
-
-        html[hc="a7"] {
-            filter: brightness(100%) contrast(100%)
-                    sepia(100%) hue-rotate(320deg)
-                    saturate(85%) brightness(90%) !important;
-            -webkit-filter: brightness(100%) contrast(100%)
-                           sepia(100%) hue-rotate(320deg)
-                           saturate(85%) brightness(90%) !important;
-        }
-
-        html[hc="a8"] {
-            filter: brightness(100%) contrast(100%)
-                    sepia(100%) hue-rotate(180deg)
-                    saturate(50%) brightness(110%) !important;
-            -webkit-filter: brightness(100%) contrast(100%)
-                           sepia(100%) hue-rotate(180deg)
-                           saturate(50%) brightness(110%) !important;
-        }
-
-        html[hc="a9"] {
-            filter: contrast(120%) brightness(105%) saturate(90%) !important;
-            -webkit-filter: contrast(120%) brightness(105%) saturate(90%) !important;
-            background-color: #f8f9fa !important;
-            color: #000000 !important;
-        }
-
-        html[hc="a9"] * {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Open Sans', sans-serif !important;
-            letter-spacing: 0.03em !important;
-            line-height: 1.5 !important;
-            text-shadow: none !important;
-        }
-
-        html[hc="a10"] {
-            filter: brightness(80%) sepia(30%)
-                    hue-rotate(320deg) saturate(40%) !important;
-            -webkit-filter: brightness(80%) sepia(30%)
-                           hue-rotate(320deg) saturate(40%) !important;
-            background-color: #1a0f0f !important;
-            color: #ff4d4d !important;
-        }
-
-        html[hc="a10"] * {
-            text-shadow: none !important;
-        }
-
-        /* Применяем стили ко всем элементам для лучшей совместимости */
-        html[hc="a6"] *,
-        html[hc="a7"] *,
-        html[hc="a8"] *,
-        html[hc="a9"] *,
-        html[hc="a10"] * {
-            background-color: transparent !important;
         }
     `;
   }
