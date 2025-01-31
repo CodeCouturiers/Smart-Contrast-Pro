@@ -231,26 +231,27 @@ class ContrastManager {
   }
 
   getDefaultScheme() {
-    const scheme = localStorage.getItem("scheme");
-    const result = scheme >= 0 && scheme <= 5 ? parseInt(scheme) : 3;
-    console.log("ContrastManager: Getting default scheme:", result);
+    const scheme = localStorage.getItem('scheme');
+    // Если схема не установлена или некорректна, возвращаем 3 (стандартная схема)
+    const result = (scheme !== null && scheme >= 0 && scheme <= 5) ? parseInt(scheme) : 3;
+    console.log('ContrastManager: Getting default scheme:', result);
     return result;
   }
 
   getSiteScheme(site) {
-    console.log("ContrastManager: Getting scheme for site:", site);
+    console.log('ContrastManager: Getting scheme for site:', site);
     try {
-      const siteSchemes = JSON.parse(
-        localStorage.getItem("siteschemes") || "{}"
-      );
-      const scheme = siteSchemes[site];
-      const result =
-        scheme >= 0 && scheme <= 5 ? parseInt(scheme) : this.getDefaultScheme();
-      console.log("ContrastManager: Site scheme:", result);
-      return result;
+        const siteSchemes = JSON.parse(localStorage.getItem('siteschemes') || '{}');
+        const scheme = siteSchemes[site];
+        // Проверяем, что схема существует и валидна
+        const result = (scheme !== undefined && scheme >= 0 && scheme <= 5) ?
+            parseInt(scheme) :
+            this.getDefaultScheme();
+        console.log('ContrastManager: Site scheme:', result);
+        return result;
     } catch (error) {
-      console.error("ContrastManager: Error getting site scheme:", error);
-      return this.getDefaultScheme();
+        console.error('ContrastManager: Error getting site scheme:', error);
+        return this.getDefaultScheme();
     }
   }
 
@@ -334,10 +335,13 @@ class ContrastManager {
   resetSettings() {
     console.log('ContrastManager: Resetting all settings');
 
-    // Сбрасываем настройки для сайтов
-    localStorage.setItem('siteschemes', '{}');
+    // Сбрасываем все настройки в localStorage
+    localStorage.removeItem('siteschemes');
+    localStorage.removeItem('scheme');
+    localStorage.removeItem('customStyles');
+    localStorage.removeItem('defaultCustomStyles');
 
-    // Восстанавливаем настройки по умолчанию
+    // Устанавливаем начальные значения
     const defaultStyles = {
         contrast: '150',
         brightness: '120',
@@ -347,28 +351,33 @@ class ContrastManager {
         enabled: true
     };
 
-    // Загружаем сохраненные настройки по умолчанию, если они есть
-    const savedDefaults = JSON.parse(localStorage.getItem('defaultCustomStyles') || '{}');
-    const customStyles = Object.keys(savedDefaults).length > 0 ? savedDefaults : defaultStyles;
-
-    console.log('ContrastManager: Restoring default styles:', customStyles);
+    console.log('ContrastManager: Restoring to initial default styles:', defaultStyles);
 
     // Обновляем значения в интерфейсе
-    document.getElementById('contrast').value = customStyles.contrast;
-    document.getElementById('contrastValue').textContent = customStyles.contrast + '%';
-    document.getElementById('brightness').value = customStyles.brightness;
-    document.getElementById('brightnessValue').textContent = customStyles.brightness + '%';
-    document.getElementById('textColor').value = customStyles.textColor;
-    document.getElementById('bgColor').value = customStyles.bgColor;
-    document.getElementById('linkColor').value = customStyles.linkColor;
+    document.getElementById('contrast').value = defaultStyles.contrast;
+    document.getElementById('contrastValue').textContent = defaultStyles.contrast + '%';
+    document.getElementById('brightness').value = defaultStyles.brightness;
+    document.getElementById('brightnessValue').textContent = defaultStyles.brightness + '%';
+    document.getElementById('textColor').value = defaultStyles.textColor;
+    document.getElementById('bgColor').value = defaultStyles.bgColor;
+    document.getElementById('linkColor').value = defaultStyles.linkColor;
 
-    // Сохраняем и применяем настройки
-    localStorage.setItem('customStyles', JSON.stringify(customStyles));
+    // Устанавливаем схему по умолчанию
+    localStorage.setItem('scheme', '3'); // Устанавливаем стандартную схему
+    localStorage.setItem('customStyles', JSON.stringify(defaultStyles));
 
+    // Обновляем UI и отправляем сообщение об обновлении
     this.updateUI();
     chrome.runtime.sendMessage({
         action: 'updateTabs',
-        customStyles: customStyles
+        customStyles: defaultStyles
+    });
+
+    // Перезагружаем страницу для полного сброса
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]) {
+            chrome.tabs.reload(tabs[0].id);
+        }
     });
   }
 
