@@ -375,6 +375,28 @@ class ContrastManager {
       return;
     }
 
+    // Расширенное логирование для научных режимов
+    const isScientificMode = value >= 6;
+    if (isScientificMode) {
+      console.group('ContrastManager: Scientific Mode Change');
+      console.log(`Mode Type: ${this.getSchemeName(value)}`);
+      console.log('Mode Details:', {
+        'Previous Mode': {
+          id: oldScheme,
+          name: this.getSchemeName(oldScheme),
+          isScientific: oldScheme >= 6
+        },
+        'New Mode': {
+          id: value,
+          name: this.getSchemeName(value),
+          isScientific: true,
+          description: this.getScientificModeDescription(value)
+        },
+        'Target Site': site || 'Global Default'
+      });
+      console.groupEnd();
+    }
+
     console.log(
       `ContrastManager: Scheme change initiated - From: ${oldScheme} (${this.getSchemeName(oldScheme)}) To: ${value} (${this.getSchemeName(value)})`
     );
@@ -389,6 +411,11 @@ class ContrastManager {
         console.log(`ContrastManager: Updating default scheme from "${this.getSchemeName(oldScheme)}" to "${this.getSchemeName(value)}"`);
         localStorage.setItem("scheme", value);
         this.cache.defaultScheme = value;
+      }
+
+      // Добавляем логирование применения научного режима
+      if (isScientificMode) {
+        console.log(`ContrastManager: Applying scientific mode effects for ${this.getSchemeName(value)}`);
       }
 
       console.log(
@@ -697,6 +724,18 @@ class ContrastManager {
   // Добавляем метод для получения названия схемы
   getSchemeName(schemeId) {
     return this.SCHEME_NAMES[schemeId] || `Неизвестная схема (${schemeId})`;
+  }
+
+  // Добавляем новый метод для получения описания научного режима
+  getScientificModeDescription(schemeId) {
+    const descriptions = {
+      '6': 'Симуляция дейтеранопии - нарушения восприятия зеленого цвета. Помогает тестировать доступность для людей с красно-зеленой цветовой слепотой.',
+      '7': 'Симуляция протанопии - нарушения восприятия красного цвета. Улучшает видимость для людей с дефицитом красных колбочек.',
+      '8': 'Симуляция тританопии - нарушения восприятия синего цвета. Адаптирует контент для людей с сине-желтой цветовой слепотой.',
+      '9': 'Режим повышенной читаемости с оптимизированным контрастом и увеличенным межстрочным интервалом.',
+      '10': 'Специальный ночной режим с пониженной яркостью и теплыми оттенками для комфортного чтения в темноте.'
+    };
+    return descriptions[schemeId] || 'Описание недоступно';
   }
 }
 

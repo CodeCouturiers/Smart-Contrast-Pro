@@ -77,15 +77,19 @@
             padding: var(--spacing-sm);
             cursor: pointer;
             transition: background-color 0.2s ease;
+            border-radius: var(--border-radius);
         }
 
         .scheme-option:hover {
             background-color: rgba(0, 0, 0, 0.05);
-            border-radius: var(--border-radius);
         }
 
         .scheme-option input[type="radio"] {
             margin-right: var(--spacing-sm);
+        }
+
+        .scheme-option span {
+            flex: 1;
         }
 
         .custom-settings {
@@ -174,6 +178,10 @@
                 background: #343a40;
                 border-color: #495057;
             }
+
+            .scheme-option:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
         }
     </style>
 </head>
@@ -215,41 +223,32 @@
                 <input type="radio" name="scheme" value="5">
                 <span i18n-content="highcontrast_yellow_on_black"></span>
             </label>
-        </fieldset>
 
-        <div class="scientific-modes">
-            <h3>Научные режимы контраста</h3>
-            <div class="scientific-mode-container">
-                <label class="scheme-option">
-                    <input type="radio" name="scheme" value="6" class="scientific-mode">
-                    Дейтеранопия (красно-зеленая слепота)
-                </label>
-            </div>
-            <div class="scientific-mode-container">
-                <label class="scheme-option">
-                    <input type="radio" name="scheme" value="7" class="scientific-mode">
-                    Протанопия (красная слепота)
-                </label>
-            </div>
-            <div class="scientific-mode-container">
-                <label class="scheme-option">
-                    <input type="radio" name="scheme" value="8" class="scientific-mode">
-                    Тританопия (сине-желтая слепота)
-                </label>
-            </div>
-            <div class="scientific-mode-container">
-                <label class="scheme-option">
-                    <input type="radio" name="scheme" value="9" class="scientific-mode">
-                    Повышенная читаемость
-                </label>
-            </div>
-            <div class="scientific-mode-container">
-                <label class="scheme-option">
-                    <input type="radio" name="scheme" value="10" class="scientific-mode">
-                    Режим ночного зрения
-                </label>
-            </div>
-        </div>
+            <label class="scheme-option">
+                <input type="radio" name="scheme" value="6">
+                <span>Дейтеранопия (красно-зеленая слепота)</span>
+            </label>
+
+            <label class="scheme-option">
+                <input type="radio" name="scheme" value="7">
+                <span>Протанопия (красная слепота)</span>
+            </label>
+
+            <label class="scheme-option">
+                <input type="radio" name="scheme" value="8">
+                <span>Тританопия (сине-желтая слепота)</span>
+            </label>
+
+            <label class="scheme-option">
+                <input type="radio" name="scheme" value="9">
+                <span>Повышенная читаемость</span>
+            </label>
+
+            <label class="scheme-option">
+                <input type="radio" name="scheme" value="10">
+                <span>Режим ночного зрения</span>
+            </label>
+        </fieldset>
 
         <div class="custom-settings">
             <h3>Настройки контраста</h3>

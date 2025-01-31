@@ -5,6 +5,67 @@ class HighContrastManager {
     this.mode = window.self === window.top ? "a" : "b";
     this.customStyles = null;
 
+    // Определяем все цветовые схемы
+    this.COLOR_SCHEMES = {
+      0: { // Нормальный контраст
+        filter: 'url(#hc_extension_off)',
+        background: 'inherit'
+      },
+      1: { // Резкий контраст
+        filter: 'url(#hc_extension_high_contrast)',
+        background: 'white'
+      },
+      2: { // Оттенки серого
+        filter: 'url(#hc_extension_grayscale)',
+        background: 'inherit'
+      },
+      3: { // Инверсия цвета
+        filter: 'url(#hc_extension_invert)',
+        background: 'inherit'
+      },
+      4: { // Негатив
+        filter: 'url(#hc_extension_invert_grayscale)',
+        background: 'inherit'
+      },
+      5: { // Желтый на черном
+        filter: 'url(#hc_extension_yellow_on_black)',
+        background: 'black'
+      },
+      6: { // Дейтеранопия
+        filter: 'url(#hc_extension_deuteranopia)',
+        textColor: '#ffffff',
+        background: '#000033',
+        linkColor: '#00ffff'
+      },
+      7: { // Протанопия
+        filter: 'url(#hc_extension_protanopia)',
+        textColor: '#ffffff',
+        background: '#000033',
+        linkColor: '#00ffff'
+      },
+      8: { // Тританопия
+        filter: 'url(#hc_extension_tritanopia)',
+        textColor: '#ffff00',
+        background: '#000066',
+        linkColor: '#00ff00'
+      },
+      9: { // Повышенная читаемость
+        filter: 'url(#hc_extension_high_legibility)',
+        textColor: '#ffffff',
+        background: '#1a1a1a',
+        linkColor: '#66ff66',
+        fontSize: '110%',
+        lineHeight: '1.5',
+        letterSpacing: '0.5px'
+      },
+      10: { // Ночное зрение
+        filter: 'url(#hc_extension_night_vision)',
+        textColor: '#ff0000',
+        background: '#000000',
+        linkColor: '#990000'
+      }
+    };
+
     this.init();
   }
 
@@ -99,26 +160,10 @@ class HighContrastManager {
       // Добавляем класс для всей страницы
       document.documentElement.classList.add('high-contrast-enabled');
 
-      // Применяем научные режимы, если они выбраны
-      if (this.scheme >= 6 && window.HighContrastScientificModes) {
-        const modeMap = {
-          6: 'deuteranopia',
-          7: 'protanopia',
-          8: 'tritanopia',
-          9: 'enhanced_readability',
-          10: 'night_vision'
-        };
-
-        const modeName = modeMap[this.scheme];
-        if (modeName) {
-          window.HighContrastScientificModes.applyMode(modeName);
-        }
-      } else {
-        // Применяем обычные режимы
-        this.updateExtraElements();
-        this.updateHtmlAttributes(html);
-      }
-
+      // Применяем выбранную схему
+      this.applyColorScheme(this.scheme);
+      this.updateExtraElements();
+      this.updateHtmlAttributes(html);
       this.triggerRepaint();
     } else {
       document.documentElement.classList.remove('high-contrast-enabled');
@@ -126,16 +171,61 @@ class HighContrastManager {
     }
   }
 
+  applyColorScheme(schemeId) {
+    const scheme = this.COLOR_SCHEMES[schemeId];
+    if (!scheme) {
+      console.error('Invalid color scheme:', schemeId);
+      return;
+    }
+
+    const style = document.getElementById('hc_style') || document.createElement('style');
+    style.id = 'hc_style';
+
+    let css = `
+      html {
+        filter: ${scheme.filter} !important;
+        ${scheme.background !== 'inherit' ? `background: ${scheme.background} !important;` : ''}
+        ${scheme.textColor ? `color: ${scheme.textColor} !important;` : ''}
+        ${scheme.fontSize ? `font-size: ${scheme.fontSize} !important;` : ''}
+        ${scheme.lineHeight ? `line-height: ${scheme.lineHeight} !important;` : ''}
+        ${scheme.letterSpacing ? `letter-spacing: ${scheme.letterSpacing} !important;` : ''}
+      }
+    `;
+
+    if (scheme.textColor) {
+      css += `
+        body {
+          background-color: ${scheme.background} !important;
+          color: ${scheme.textColor} !important;
+        }
+
+        a, a:visited, a:hover, a:active {
+          color: ${scheme.linkColor} !important;
+        }
+
+        input, textarea, select, button {
+          background-color: ${scheme.background} !important;
+          color: ${scheme.textColor} !important;
+          border: 1px solid ${scheme.textColor} !important;
+        }
+
+        button:hover {
+          background-color: ${scheme.textColor} !important;
+          color: ${scheme.background} !important;
+        }
+      `;
+    }
+
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+
   clearAllStyles() {
-    // Удаляем старый стиль
+    // Удаляем все стили
     const oldStyle = document.getElementById("hc_style");
     if (oldStyle) {
       oldStyle.remove();
     }
-
-    // Удаляем все научные стили
-    const scientificStyles = document.querySelectorAll('style[data-scientific-mode]');
-    scientificStyles.forEach(style => style.remove());
 
     // Сбрасываем фильтры
     document.documentElement.style.filter = '';
