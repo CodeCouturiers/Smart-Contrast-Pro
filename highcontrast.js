@@ -7,66 +7,80 @@ class HighContrastManager {
 
     // Определяем все цветовые схемы
     this.COLOR_SCHEMES = {
-      0: { // Нормальный контраст
-        filter: 'url(#hc_extension_off)',
-        background: 'inherit'
+      0: {
+        // Нормальный контраст
+        filter: "url(#hc_extension_off)",
+        background: "inherit",
       },
-      1: { // Резкий контраст
-        filter: 'url(#hc_extension_high_contrast)',
-        background: 'white'
+      1: {
+        // Резкий контраст
+        filter: "url(#hc_extension_high_contrast)",
+        background: "white",
       },
-      2: { // Оттенки серого
-        filter: 'url(#hc_extension_grayscale)',
-        background: 'inherit'
+      2: {
+        // Оттенки серого
+        filter: "url(#hc_extension_grayscale)",
+        background: "inherit",
       },
-      3: { // Инверсия цвета
-        filter: 'url(#hc_extension_invert)',
-        background: 'inherit'
+      3: {
+        // Инверсия цвета
+        filter: "url(#hc_extension_invert)",
+        background: "inherit",
       },
-      4: { // Негатив
-        filter: 'url(#hc_extension_invert_grayscale)',
-        background: 'inherit'
+      4: {
+        // Негатив
+        filter: "url(#hc_extension_invert_grayscale)",
+        background: "inherit",
       },
-      5: { // Желтый на черном
-        filter: 'url(#hc_extension_yellow_on_black)',
-        background: 'black'
+      5: {
+        // Желтый на черном
+        filter: "url(#hc_extension_yellow_on_black)",
+        background: "black",
       },
-      6: { // Дейтеранопия
-        filter: 'url(#hc_extension_deuteranopia)',
-        textColor: '#ffffff',
-        background: '#000033',
-        linkColor: '#00ffff'
+      6: {
+        // Дейтеранопия
+        filter: "url(#hc_extension_deuteranopia)",
+        textColor: "#ffffff",
+        background: "#000033",
+        linkColor: "#00ffff",
       },
-      7: { // Протанопия
-        filter: 'url(#hc_extension_protanopia)',
-        textColor: '#ffffff',
-        background: '#000033',
-        linkColor: '#00ffff'
+      7: {
+        // Протанопия
+        filter: "url(#hc_extension_protanopia)",
+        textColor: "#ffffff",
+        background: "#000033",
+        linkColor: "#00ffff",
       },
-      8: { // Тританопия
-        filter: 'url(#hc_extension_tritanopia)',
-        textColor: '#ffff00',
-        background: '#000066',
-        linkColor: '#00ff00'
+      8: {
+        // Тританопия
+        filter: "url(#hc_extension_tritanopia)",
+        textColor: "#ffff00",
+        background: "#000066",
+        linkColor: "#00ff00",
       },
-      9: { // Повышенная читаемость
-        filter: 'url(#hc_extension_high_legibility)',
-        textColor: '#ffffff',
-        background: '#1a1a1a',
-        linkColor: '#66ff66',
-        fontSize: '110%',
-        lineHeight: '1.5',
-        letterSpacing: '0.5px'
+      9: {
+        // Повышенная читаемость
+        filter: "url(#hc_extension_high_legibility)",
+        textColor: "#ffffff",
+        background: "#1a1a1a",
+        linkColor: "#66ff66",
+        fontSize: "110%",
+        lineHeight: "1.5",
+        letterSpacing: "0.5px",
       },
-      10: { // Ночное зрение
-        filter: 'url(#hc_extension_night_vision)',
-        textColor: '#ff0000',
-        background: '#000000',
-        linkColor: '#990000'
-      }
+      10: {
+        // Ночное зрение
+        filter: "url(#hc_extension_night_vision)",
+        textColor: "#ff0000",
+        background: "#000000",
+        linkColor: "#990000",
+      },
     };
 
-    console.log('HighContrastManager: Initializing with default scheme:', this.scheme);
+    console.log(
+      "HighContrastManager: Initializing with default scheme:",
+      this.scheme
+    );
     this.init();
   }
 
@@ -83,10 +97,13 @@ class HighContrastManager {
 
   setupMessageListener() {
     chrome.runtime.onMessage.addListener((request) => {
-      console.log('HighContrastManager: Received message:', request);
+      console.log("HighContrastManager: Received message:", request);
 
       if (request.customStyles) {
-        console.log('HighContrastManager: Received custom styles:', request.customStyles);
+        console.log(
+          "HighContrastManager: Received custom styles:",
+          request.customStyles
+        );
         this.customStyles = request.customStyles;
         this.enabled = true;
         this.update();
@@ -96,9 +113,9 @@ class HighContrastManager {
       const enabledChanged = this.enabled !== request.enabled;
 
       if (enabledChanged || schemeChanged) {
-        console.log('HighContrastManager: State change detected', {
-          'enabled': `${this.enabled} → ${request.enabled}`,
-          'scheme': `${this.scheme} → ${request.scheme}`
+        console.log("HighContrastManager: State change detected", {
+          enabled: `${this.enabled} → ${request.enabled}`,
+          scheme: `${this.scheme} → ${request.scheme}`,
         });
 
         this.enabled = request.enabled;
@@ -125,27 +142,28 @@ class HighContrastManager {
   }
 
   requestInitialState() {
-    console.log('HighContrastManager: Requesting initial state...');
+    console.log("HighContrastManager: Requesting initial state...");
 
     chrome.runtime.sendMessage({ action: "getInitialState" }, (response) => {
-      console.log('HighContrastManager: Received initial state:', response);
+      console.log("HighContrastManager: Received initial state:", response);
 
-      if (response && typeof response === 'object') {
+      if (response && typeof response === "object") {
         this.enabled = !!response.enabled;
 
         if (response.scheme !== undefined && response.scheme !== null) {
           this.scheme = this.validateScheme(response.scheme);
         } else {
-          console.warn('HighContrastManager: No scheme in response, using default');
           this.scheme = 0;
         }
 
-        console.log('HighContrastManager: Initial state set:', {
+        console.log("HighContrastManager: Initial state set:", {
           enabled: this.enabled,
-          scheme: this.scheme
+          scheme: this.scheme,
         });
       } else {
-        console.warn('HighContrastManager: Invalid response from background script, using defaults');
+        console.warn(
+          "HighContrastManager: Invalid response from background script, using defaults"
+        );
         this.enabled = false;
         this.scheme = 0;
       }
@@ -182,13 +200,13 @@ class HighContrastManager {
   }
 
   update() {
-    console.log('HighContrastManager: Updating with state:', {
+    console.log("HighContrastManager: Updating with state:", {
       enabled: this.enabled,
-      scheme: this.scheme
+      scheme: this.scheme,
     });
 
     if (!document.body) {
-      console.log('HighContrastManager: No body element, delaying update');
+      console.log("HighContrastManager: No body element, delaying update");
       setTimeout(() => this.update(), 100);
       return;
     }
@@ -196,16 +214,19 @@ class HighContrastManager {
     const html = document.documentElement;
 
     if (this.enabled) {
-      console.log('HighContrastManager: Applying enabled state with scheme:', this.scheme);
+      console.log(
+        "HighContrastManager: Applying enabled state with scheme:",
+        this.scheme
+      );
       this.clearAllStyles();
-      document.documentElement.classList.add('high-contrast-enabled');
+      document.documentElement.classList.add("high-contrast-enabled");
       this.applyColorScheme(this.scheme);
       this.updateExtraElements();
       this.updateHtmlAttributes(html);
       this.triggerRepaint();
     } else {
-      console.log('HighContrastManager: Applying disabled state');
-      document.documentElement.classList.remove('high-contrast-enabled');
+      console.log("HighContrastManager: Applying disabled state");
+      document.documentElement.classList.remove("high-contrast-enabled");
       this.disableHighContrast(html);
     }
   }
@@ -214,19 +235,32 @@ class HighContrastManager {
     const validSchemeId = this.validateScheme(schemeId);
     const scheme = this.COLOR_SCHEMES[validSchemeId];
 
-    console.log('Applying color scheme:', validSchemeId, scheme);
+    console.log("Applying color scheme:", validSchemeId, scheme);
 
-    const style = document.getElementById('hc_style') || document.createElement('style');
-    style.id = 'hc_style';
+    const style =
+      document.getElementById("hc_style") || document.createElement("style");
+    style.id = "hc_style";
 
     let css = `
       html {
         filter: ${scheme.filter} !important;
-        ${scheme.background !== 'inherit' ? `background: ${scheme.background} !important;` : ''}
-        ${scheme.textColor ? `color: ${scheme.textColor} !important;` : ''}
-        ${scheme.fontSize ? `font-size: ${scheme.fontSize} !important;` : ''}
-        ${scheme.lineHeight ? `line-height: ${scheme.lineHeight} !important;` : ''}
-        ${scheme.letterSpacing ? `letter-spacing: ${scheme.letterSpacing} !important;` : ''}
+        ${
+          scheme.background !== "inherit"
+            ? `background: ${scheme.background} !important;`
+            : ""
+        }
+        ${scheme.textColor ? `color: ${scheme.textColor} !important;` : ""}
+        ${scheme.fontSize ? `font-size: ${scheme.fontSize} !important;` : ""}
+        ${
+          scheme.lineHeight
+            ? `line-height: ${scheme.lineHeight} !important;`
+            : ""
+        }
+        ${
+          scheme.letterSpacing
+            ? `letter-spacing: ${scheme.letterSpacing} !important;`
+            : ""
+        }
       }
     `;
 
@@ -266,8 +300,8 @@ class HighContrastManager {
     }
 
     // Сбрасываем фильтры
-    document.documentElement.style.filter = '';
-    document.body.style.filter = '';
+    document.documentElement.style.filter = "";
+    document.body.style.filter = "";
   }
 
   updateHtmlAttributes(html) {
@@ -532,17 +566,21 @@ class HighContrastManager {
   }
 
   validateScheme(scheme) {
-    console.log('HighContrastManager: Validating scheme:', scheme);
+    console.log("HighContrastManager: Validating scheme:", scheme);
 
     if (scheme === undefined || scheme === null) {
-      console.warn('HighContrastManager: Scheme is undefined or null, using default (0)');
+      console.warn(
+        "HighContrastManager: Scheme is undefined or null, using default (0)"
+      );
       return 0;
     }
 
     const schemeId = parseInt(scheme);
 
     if (isNaN(schemeId)) {
-      console.warn(`HighContrastManager: Invalid scheme format: ${scheme}, using default (0)`);
+      console.warn(
+        `HighContrastManager: Invalid scheme format: ${scheme}, using default (0)`
+      );
       return 0;
     }
 
@@ -551,7 +589,9 @@ class HighContrastManager {
       return schemeId;
     }
 
-    console.warn(`HighContrastManager: Invalid scheme value: ${scheme}, using default (0)`);
+    console.warn(
+      `HighContrastManager: Invalid scheme value: ${scheme}, using default (0)`
+    );
     return 0;
   }
 }
