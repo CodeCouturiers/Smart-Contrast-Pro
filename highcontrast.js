@@ -3,6 +3,7 @@ class HighContrastManager {
     this.enabled = false;
     this.scheme = 0;
     this.mode = window.self === window.top ? "a" : "b";
+    this.customStyles = null;
 
     this.init();
   }
@@ -20,6 +21,9 @@ class HighContrastManager {
 
   setupMessageListener() {
     chrome.runtime.onMessage.addListener((request) => {
+      if (request.customStyles) {
+        this.customStyles = request.customStyles;
+      }
       if (this.enabled !== request.enabled || this.scheme !== request.scheme) {
         this.enabled = request.enabled;
         this.scheme = request.scheme;
@@ -136,7 +140,21 @@ class HighContrastManager {
     let style = document.getElementById("hc_style");
     if (!style) {
       const baseUrl = window.location.href.replace(window.location.hash, "");
-      const css = this.getCssTemplate().replace(/#/g, baseUrl + "#");
+      let css = this.getCssTemplate().replace(/#/g, baseUrl + "#");
+
+      // Применяем пользовательские стили
+      if (this.customStyles) {
+        css += `
+          .high-contrast-enabled {
+            filter: contrast(${this.customStyles.contrast}%) brightness(${this.customStyles.brightness}%) !important;
+            background-color: ${this.customStyles.bgColor} !important;
+            color: ${this.customStyles.textColor} !important;
+          }
+          .high-contrast-enabled a {
+            color: ${this.customStyles.linkColor} !important;
+          }
+        `;
+      }
 
       style = document.createElement("style");
       style.id = "hc_style";

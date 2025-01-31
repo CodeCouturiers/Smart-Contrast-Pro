@@ -19,11 +19,11 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
-            width: 320px;
+            width: 380px;
             padding: var(--spacing-md);
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -88,24 +88,66 @@
             margin-right: var(--spacing-sm);
         }
 
-        .action-btn {
-            width: 100%;
-            padding: var(--spacing-sm) var(--spacing-md);
-            margin-bottom: var(--spacing-sm);
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
+        .custom-settings {
+            margin-top: var(--spacing-lg);
+            padding: var(--spacing-md);
+            border: 1px solid #ddd;
             border-radius: var(--border-radius);
-            font-size: 0.875rem;
+        }
+
+        .custom-settings h3 {
+            margin-bottom: var(--spacing-md);
+            font-size: 1rem;
+        }
+
+        .setting-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .setting-group label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-size: 0.9rem;
+        }
+
+        .setting-group input[type="range"] {
+            width: 100%;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .setting-group input[type="color"] {
+            width: 100%;
+            height: 40px;
+            padding: 2px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .value-display {
+            font-size: 0.8rem;
+            color: #666;
+            text-align: right;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: var(--spacing-sm);
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            background: #f8f9fa;
             cursor: pointer;
+            font-size: 0.9rem;
             transition: all 0.2s ease;
         }
 
         .action-btn:hover {
-            background-color: #e9ecef;
-        }
-
-        body.disabled {
-            opacity: 0.6;
+            background: #e9ecef;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -114,23 +156,26 @@
                 --bg-color: #212529;
             }
 
+            .custom-settings {
+                border-color: #495057;
+            }
+
             .action-btn {
-                background-color: #343a40;
+                background: #343a40;
                 border-color: #495057;
                 color: #e9ecef;
             }
 
             .action-btn:hover {
-                background-color: #495057;
+                background: #495057;
             }
 
-            .scheme-option:hover {
-                background-color: rgba(255, 255, 255, 0.05);
+            input[type="color"] {
+                background: #343a40;
+                border-color: #495057;
             }
         }
     </style>
-    <script src="common.js" defer></script>
-    <script src="popup.js" defer></script>
 </head>
 <body>
     <h1 class="title" id="title"></h1>
@@ -172,13 +217,53 @@
             </label>
         </fieldset>
 
-        <button class="action-btn" id="make_default">
-            <span i18n-content="highcontrast_setdefault"></span>
-        </button>
+        <div class="custom-settings">
+            <h3>Настройки контраста</h3>
 
-        <button class="action-btn" id="forget">
-            <span i18n-content="highcontrast_forget"></span>
-        </button>
+            <div class="setting-group">
+                <label for="contrast">Контрастность</label>
+                <input type="range" id="contrast" min="100" max="200" value="150">
+                <div class="value-display" id="contrastValue">150%</div>
+            </div>
+
+            <div class="setting-group">
+                <label for="brightness">Яркость</label>
+                <input type="range" id="brightness" min="80" max="150" value="120">
+                <div class="value-display" id="brightnessValue">120%</div>
+            </div>
+
+            <div class="setting-group">
+                <label for="textColor">Цвет текста</label>
+                <input type="color" id="textColor" value="#ffffff">
+            </div>
+
+            <div class="setting-group">
+                <label for="bgColor">Цвет фона</label>
+                <input type="color" id="bgColor" value="#000000">
+            </div>
+
+            <div class="setting-group">
+                <label for="linkColor">Цвет ссылок</label>
+                <input type="color" id="linkColor" value="#00ff00">
+            </div>
+
+            <button class="action-btn apply-btn" id="apply_custom_styles">
+                <span>Применить настройки</span>
+            </button>
+        </div>
+
+        <div class="action-buttons">
+            <button class="action-btn" id="make_default">
+                <span i18n-content="highcontrast_setdefault"></span>
+            </button>
+
+            <button class="action-btn" id="forget">
+                <span i18n-content="highcontrast_forget"></span>
+            </button>
+        </div>
     </div>
+
+    <script src="common.js"></script>
+    <script src="popup.js"></script>
 </body>
 </html>

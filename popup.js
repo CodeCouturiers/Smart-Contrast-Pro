@@ -26,6 +26,7 @@ class ContrastManager {
   async init() {
     console.log("ContrastManager: Starting initialization...");
     this.initializeI18n();
+    this.loadCustomStyles();
     this.setupEventListeners();
     await this.getCurrentTab();
     this.updateUI();
@@ -45,30 +46,44 @@ class ContrastManager {
   setupEventListeners() {
     console.log("ContrastManager: Setting up event listeners...");
 
-    document.querySelectorAll('input[name="scheme"]').forEach((radio) => {
-      radio.addEventListener("change", (e) => {
+    // Слушатели для радио кнопок
+    document.querySelectorAll('input[name="scheme"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
         if (e.target.checked) {
-          console.log(
-            "ContrastManager: Radio button changed to:",
-            e.target.value
-          );
+          console.log('ContrastManager: Radio button changed to:', e.target.value);
           this.handleSchemeChange(parseInt(e.target.value));
         }
       });
     });
 
-    document.getElementById("toggle").addEventListener("click", () => {
-      console.log("ContrastManager: Toggle button clicked");
+    // Слушатели для ползунков - только обновляем отображение значений
+    document.getElementById('contrast').addEventListener('input', (e) => {
+      document.getElementById('contrastValue').textContent = e.target.value + '%';
+    });
+
+    document.getElementById('brightness').addEventListener('input', (e) => {
+      document.getElementById('brightnessValue').textContent = e.target.value + '%';
+    });
+
+    // Кнопка применения пользовательских настроек
+    document.getElementById('apply_custom_styles').addEventListener('click', () => {
+      console.log('ContrastManager: Applying custom styles');
+      this.updateCustomStyles();
+    });
+
+    // Существующие слушатели
+    document.getElementById('toggle').addEventListener('click', () => {
+      console.log('ContrastManager: Toggle button clicked');
       this.toggleContrast();
     });
 
-    document.getElementById("make_default").addEventListener("click", () => {
-      console.log("ContrastManager: Make default button clicked");
+    document.getElementById('make_default').addEventListener('click', () => {
+      console.log('ContrastManager: Make default button clicked');
       this.makeDefault();
     });
 
-    document.getElementById("forget").addEventListener("click", () => {
-      console.log("ContrastManager: Forget button clicked");
+    document.getElementById('forget').addEventListener('click', () => {
+      console.log('ContrastManager: Forget button clicked');
       this.resetSettings();
     });
   }
@@ -313,6 +328,53 @@ class ContrastManager {
       radio.checked = radio.value === value.toString();
       radio.disabled = !this.getEnabled();
     });
+  }
+
+  updateCustomStyles() {
+    console.log('ContrastManager: Updating custom styles');
+    const contrast = document.getElementById('contrast').value;
+    const brightness = document.getElementById('brightness').value;
+    const textColor = document.getElementById('textColor').value;
+    const bgColor = document.getElementById('bgColor').value;
+    const linkColor = document.getElementById('linkColor').value;
+
+    const customStyles = {
+      contrast,
+      brightness,
+      textColor,
+      bgColor,
+      linkColor
+    };
+
+    console.log('ContrastManager: New custom styles:', customStyles);
+    localStorage.setItem('customStyles', JSON.stringify(customStyles));
+    this.updateUI();
+    chrome.runtime.sendMessage({
+      action: 'updateTabs',
+      customStyles
+    });
+  }
+
+  loadCustomStyles() {
+    const savedStyles = JSON.parse(localStorage.getItem('customStyles') || '{}');
+
+    if (savedStyles.contrast) {
+      document.getElementById('contrast').value = savedStyles.contrast;
+      document.getElementById('contrastValue').textContent = savedStyles.contrast + '%';
+    }
+    if (savedStyles.brightness) {
+      document.getElementById('brightness').value = savedStyles.brightness;
+      document.getElementById('brightnessValue').textContent = savedStyles.brightness + '%';
+    }
+    if (savedStyles.textColor) {
+      document.getElementById('textColor').value = savedStyles.textColor;
+    }
+    if (savedStyles.bgColor) {
+      document.getElementById('bgColor').value = savedStyles.bgColor;
+    }
+    if (savedStyles.linkColor) {
+      document.getElementById('linkColor').value = savedStyles.linkColor;
+    }
   }
 }
 
