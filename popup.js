@@ -25,6 +25,11 @@ class ContrastManager {
       INVERTED: "3",
       INVERTED_GRAYSCALE: "4",
       YELLOW_ON_BLACK: "5",
+      DEUTERANOPIA: "6",    // Для дейтеранопии (красно-зеленая слепота)
+      PROTANOPIA: "7",      // Для протанопии (красная слепота)
+      TRITANOPIA: "8",      // Для тританопии (сине-желтая слепота)
+      HIGH_LEGIBILITY: "9", // Повышенная читаемость
+      NIGHT_VISION: "10",   // Режим ночного зрения
     };
 
     // Добавляем названия схем
@@ -35,6 +40,11 @@ class ContrastManager {
       "3": "Инвертированные цвета",
       "4": "Инвертированные оттенки серого",
       "5": "Желтый на черном",
+      "6": "Дейтеранопия",
+      "7": "Протанопия",
+      "8": "Тританопия",
+      "9": "Повышенная читаемость",
+      "10": "Ночное зрение",
     };
 
     this.init();
@@ -74,6 +84,16 @@ class ContrastManager {
           );
           this.handleSchemeChange(parseInt(e.target.value));
         }
+      });
+    });
+
+    // Слушатели для чекбоксов научных режимов
+    document.querySelectorAll('.scientific-mode').forEach(checkbox => {
+      checkbox.addEventListener('change', (e) => {
+        const mode = e.target.dataset.mode;
+        const isChecked = e.target.checked;
+        console.log(`ContrastManager: Scientific mode ${mode} changed to: ${isChecked}`);
+        this.handleScientificModeChange(mode, isChecked);
       });
     });
 
@@ -279,7 +299,7 @@ class ContrastManager {
     if (this.cache.defaultScheme === null) {
       const scheme = localStorage.getItem("scheme");
       this.cache.defaultScheme =
-        scheme !== null && scheme >= 0 && scheme <= 5 ? parseInt(scheme) : 3;
+        scheme !== null && scheme >= 0 && scheme <= 10 ? parseInt(scheme) : 3;
       console.log(
         "ContrastManager: Getting default scheme:",
         this.cache.defaultScheme
@@ -311,7 +331,7 @@ class ContrastManager {
     const scheme = siteSchemes[site];
 
     // Проверяем, что схема существует и валидна
-    if (scheme !== undefined && scheme >= 0 && scheme <= 5) {
+    if (scheme !== undefined && scheme >= 0 && scheme <= 10) {
       console.log(`ContrastManager: Site scheme for ${site}: ${scheme}`);
       return parseInt(scheme);
     }
@@ -360,7 +380,7 @@ class ContrastManager {
     const site = this.site;
 
     // Проверка на валидность значения схемы
-    if (value < 0 || value > 5) {
+    if (value < 0 || value > 10) {
       console.error(`ContrastManager: Invalid scheme value: ${value}`);
       return;
     }
@@ -682,11 +702,38 @@ class ContrastManager {
     if (savedStyles.linkColor) {
       document.getElementById("linkColor").value = savedStyles.linkColor;
     }
+
+    // Загружаем состояния научных режимов
+    const scientificModes = JSON.parse(localStorage.getItem('scientificModes') || '{}');
+    document.querySelectorAll('.scientific-mode').forEach(checkbox => {
+      const mode = checkbox.dataset.mode;
+      checkbox.checked = scientificModes[mode] || false;
+    });
   }
 
   // Добавляем метод для получения названия схемы
   getSchemeName(schemeId) {
     return this.SCHEME_NAMES[schemeId] || `Неизвестная схема (${schemeId})`;
+  }
+
+  // Добавляем новый метод для обработки научных режимов
+  handleScientificModeChange(mode, enabled) {
+    console.log(`ContrastManager: Handling scientific mode change - ${mode}: ${enabled}`);
+
+    const scientificModes = JSON.parse(localStorage.getItem('scientificModes') || '{}');
+    scientificModes[mode] = enabled;
+    localStorage.setItem('scientificModes', JSON.stringify(scientificModes));
+
+    // Применяем комбинацию режимов
+    const currentScheme = this.getCurrentScheme();
+    this.updateUI();
+
+    // Отправляем обновленные настройки
+    chrome.runtime.sendMessage({
+      action: "updateTabs",
+      scheme: currentScheme,
+      scientificModes: scientificModes
+    });
   }
 }
 
