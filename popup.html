@@ -1,106 +1,184 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<link rel="stylesheet" type="text/css" href="highcontrast.css">
-<style type="text/css">
-html {
-  border-radius: 6px;
-}
-body {
-  width: 18em;
-  padding: 0.75em;
-  border-radius: 6px;
-}
-* {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 10pt;
-}
-#title {
-  outline: none;
-}
-.kb {
-  font-weight: normal;
-  font-style: italic;
-  font-size: 10pt;
-}
-button {
-  width: 100%;
-  margin: 0.75em 0 0.25em 0;
-  padding: 0.5em 1.5em;
-}
-button#toggle {
-  font-size: 12pt;
-}
-body.disabled h3,
-body.disabled a,
-body.disabled label {
-  color: #aaa;
-}
-h2 {
-  font-size: 12pt;
-  text-align: center;
-}
-label {
-  display: block;
-}
-fieldset {
-  border: none;
-  margin: 0;
-  margin-bottom: 1em;
-  padding: 0;
-}
-legend {
-  padding-top: 1em;
-  padding-bottom: 0.5em;
-}
-input[type="radio"] {
-  margin-left: 1em;
-}
-</style>
-<script type="text/javascript" src="common.js"></script>
-<script type="text/javascript" src="popup.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="highcontrast.css">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --text-color: #333;
+            --bg-color: #ffffff;
+            --border-radius: 8px;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            width: 320px;
+            padding: var(--spacing-md);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-color);
+        }
+
+        .toggle-btn {
+            width: 100%;
+            padding: var(--spacing-md);
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .toggle-btn:hover {
+            opacity: 0.9;
+        }
+
+        .controls-section {
+            margin-top: var(--spacing-lg);
+        }
+
+        .scheme-group {
+            border: none;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .scheme-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-color);
+        }
+
+        .scheme-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .scheme-option:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: var(--border-radius);
+        }
+
+        .scheme-option input[type="radio"] {
+            margin-right: var(--spacing-sm);
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background-color: #e9ecef;
+        }
+
+        body.disabled {
+            opacity: 0.6;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --text-color: #e9ecef;
+                --bg-color: #212529;
+            }
+
+            .action-btn {
+                background-color: #343a40;
+                border-color: #495057;
+                color: #e9ecef;
+            }
+
+            .action-btn:hover {
+                background-color: #495057;
+            }
+
+            .scheme-option:hover {
+                background-color: rgba(255, 255, 255, 0.05);
+            }
+        }
+    </style>
+    <script src="common.js" defer></script>
+    <script src="popup.js" defer></script>
 </head>
 <body>
+    <h1 class="title" id="title"></h1>
 
-<h2 id="title"></h2>
+    <button class="toggle-btn" id="toggle"></button>
 
-<button id="toggle"></button>
+    <div class="controls-section" id="subcontrols">
+        <fieldset class="scheme-group">
+            <legend class="scheme-title" id="scheme_title"></legend>
 
-<div id="subcontrols">
+            <label class="scheme-option">
+                <input type="radio" name="scheme" value="0">
+                <span i18n-content="highcontrast_mode_normal"></span>
+            </label>
 
-  <fieldset>
-    <legend id="scheme_title"></legend>
-    <label>
-      <input type="radio" name="scheme" value="0">
-      <span i18n-content="highcontrast_mode_normal"></span>
-    </label>
-    <label>
-      <input type="radio" name="scheme" value="1">
-      <span i18n-content="highcontrast_increased_contrast"><span>
-    </label>
-    <label>
-      <input type="radio" name="scheme" value="2">
-      <span i18n-content="highcontrast_grayscale"><span>
-    </label>
-    <label>
-      <input type="radio" name="scheme" value="3">
-      <span i18n-content="highcontrast_inverted_color"><span>
-    </label>
-    <label>
-      <input type="radio" name="scheme" value="4">
-      <span i18n-content="highcontrast_inverted_grayscale"><span>
-    </label>
-    <label>
-      <input type="radio" name="scheme" value="5">
-      <span i18n-content="highcontrast_yellow_on_black"><span>
-    </label>
-  </fieldset>
+            <label class="scheme-option">
+                <input type="radio" name="scheme" value="1">
+                <span i18n-content="highcontrast_increased_contrast"></span>
+            </label>
 
-  <button id="make_default"><span i18n-content="highcontrast_setdefault"></span></button>
+            <label class="scheme-option">
+                <input type="radio" name="scheme" value="2">
+                <span i18n-content="highcontrast_grayscale"></span>
+            </label>
 
-  <button id="forget"><span i18n-content="highcontrast_forget"></span></button>
+            <label class="scheme-option">
+                <input type="radio" name="scheme" value="3">
+                <span i18n-content="highcontrast_inverted_color"></span>
+            </label>
 
-</div>
+            <label class="scheme-option">
+                <input type="radio" name="scheme" value="4">
+                <span i18n-content="highcontrast_inverted_grayscale"></span>
+            </label>
 
+            <label class="scheme-option">
+                <input type="radio" name="scheme" value="5">
+                <span i18n-content="highcontrast_yellow_on_black"></span>
+            </label>
+        </fieldset>
+
+        <button class="action-btn" id="make_default">
+            <span i18n-content="highcontrast_setdefault"></span>
+        </button>
+
+        <button class="action-btn" id="forget">
+            <span i18n-content="highcontrast_forget"></span>
+        </button>
+    </div>
 </body>
 </html>
