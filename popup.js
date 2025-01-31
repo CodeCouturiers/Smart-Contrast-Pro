@@ -303,21 +303,73 @@ class ContrastManager {
   }
 
   makeDefault() {
+    console.log('ContrastManager: Making current settings default');
     if (this.site) {
-      const currentScheme = this.getSiteScheme(this.site);
-      console.log(
-        "ContrastManager: Making current scheme default:",
-        currentScheme
-      );
-      localStorage.setItem("scheme", currentScheme);
-      this.updateUI();
+        // Сохраняем текущую схему как схему по умолчанию
+        const currentScheme = this.getSiteScheme(this.site);
+        localStorage.setItem('scheme', currentScheme);
     }
+
+    // Сохраняем текущие пользовательские настройки как настройки по умолчанию
+    const customStyles = {
+        contrast: document.getElementById('contrast').value,
+        brightness: document.getElementById('brightness').value,
+        textColor: document.getElementById('textColor').value,
+        bgColor: document.getElementById('bgColor').value,
+        linkColor: document.getElementById('linkColor').value,
+        enabled: true
+    };
+
+    console.log('ContrastManager: Saving default custom styles:', customStyles);
+    localStorage.setItem('defaultCustomStyles', JSON.stringify(customStyles));
+    localStorage.setItem('customStyles', JSON.stringify(customStyles));
+
+    this.updateUI();
+    chrome.runtime.sendMessage({
+        action: 'updateTabs',
+        customStyles: customStyles
+    });
   }
 
   resetSettings() {
-    console.log("ContrastManager: Resetting all site settings");
-    localStorage.setItem("siteschemes", "{}");
+    console.log('ContrastManager: Resetting all settings');
+
+    // Сбрасываем настройки для сайтов
+    localStorage.setItem('siteschemes', '{}');
+
+    // Восстанавливаем настройки по умолчанию
+    const defaultStyles = {
+        contrast: '150',
+        brightness: '120',
+        textColor: '#ffffff',
+        bgColor: '#000000',
+        linkColor: '#00ff00',
+        enabled: true
+    };
+
+    // Загружаем сохраненные настройки по умолчанию, если они есть
+    const savedDefaults = JSON.parse(localStorage.getItem('defaultCustomStyles') || '{}');
+    const customStyles = Object.keys(savedDefaults).length > 0 ? savedDefaults : defaultStyles;
+
+    console.log('ContrastManager: Restoring default styles:', customStyles);
+
+    // Обновляем значения в интерфейсе
+    document.getElementById('contrast').value = customStyles.contrast;
+    document.getElementById('contrastValue').textContent = customStyles.contrast + '%';
+    document.getElementById('brightness').value = customStyles.brightness;
+    document.getElementById('brightnessValue').textContent = customStyles.brightness + '%';
+    document.getElementById('textColor').value = customStyles.textColor;
+    document.getElementById('bgColor').value = customStyles.bgColor;
+    document.getElementById('linkColor').value = customStyles.linkColor;
+
+    // Сохраняем и применяем настройки
+    localStorage.setItem('customStyles', JSON.stringify(customStyles));
+
     this.updateUI();
+    chrome.runtime.sendMessage({
+        action: 'updateTabs',
+        customStyles: customStyles
+    });
   }
 
   // Утилитарный метод для установки значения radio кнопок
