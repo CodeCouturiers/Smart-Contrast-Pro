@@ -1,6 +1,6 @@
 class HighContrastManager {
   constructor() {
-    this.isProd = false; // Set to true in production to disable logging
+    this.isProd = true; // Set to true in production to disable logging
     this.enabled = false;
     this.scheme = 0;
     this.mode = window.self === window.top ? "a" : "b";
@@ -155,7 +155,9 @@ class HighContrastManager {
 
   calculateMaxScheme() {
     // Get the highest scheme number defined in COLOR_SCHEMES
-    const schemeNumbers = Object.keys(this.COLOR_SCHEMES).map(key => parseInt(key));
+    const schemeNumbers = Object.keys(this.COLOR_SCHEMES).map((key) =>
+      parseInt(key)
+    );
     const maxScheme = Math.max(...schemeNumbers);
 
     this.log("HighContrastManager: Maximum scheme number:", maxScheme);
@@ -166,7 +168,7 @@ class HighContrastManager {
     // Also send to background script immediately
     chrome.runtime.sendMessage({
       action: "updateMaxScheme",
-      maxScheme: maxScheme
+      maxScheme: maxScheme,
     });
   }
 
