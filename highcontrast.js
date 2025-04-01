@@ -1,6 +1,6 @@
 class HighContrastManager {
   constructor() {
-    this.isProd = true; // Set to true in production to disable logging
+    this.isProd = false; // Set to false during testing to enable logging
     this.enabled = false;
     this.scheme = 0;
     this.mode = window.self === window.top ? "a" : "b";
@@ -103,6 +103,12 @@ class HighContrastManager {
         type: "svg",
         filter: "url(#hc_extension_monochrome_blue)",
         background: "#000022",
+      },
+      16: {
+        // Оптимизировано для 2K - Четкий текст
+        type: "svg",
+        filter: "url(#hc_extension_2k_sharptext)",
+        background: "inherit",
       },
     };
 
@@ -703,6 +709,24 @@ class HighContrastManager {
             filter: url(#hc_extension_monochrome_blue) !important;
             background: #000022 !important;
         }
+
+        /* Схема 16: Оптимизирована для 2K - Четкий текст */
+        html[hc="a16"] {
+            filter: url(#hc_extension_2k_sharptext) !important;
+            background: inherit !important;
+        }
+
+        /* 2K-оптимизированные стили */
+        @media screen and (min-width: 1920px) {
+            html[hc] * {
+                text-rendering: optimizeLegibility !important;
+            }
+
+            /* Улучшаем читаемость текста на 2K дисплеях */
+            html[hc] p, html[hc] span, html[hc] div, html[hc] h1, html[hc] h2, html[hc] h3, html[hc] h4, html[hc] h5, html[hc] h6 {
+                letter-spacing: 0.01em !important;
+            }
+        }
     `;
   }
 
@@ -720,9 +744,15 @@ class HighContrastManager {
 
                     <filter id="hc_extension_high_contrast">
                         <feComponentTransfer>
-                            <feFuncR type="linear" slope="3" intercept="-1"/>
-                            <feFuncG type="linear" slope="3" intercept="-1"/>
-                            <feFuncB type="linear" slope="3" intercept="-1"/>
+                            <feFuncR type="linear" slope="3.5" intercept="-1"/>
+                            <feFuncG type="linear" slope="3.5" intercept="-1"/>
+                            <feFuncB type="linear" slope="3.5" intercept="-1"/>
+                        </feComponentTransfer>
+                        <feGaussianBlur stdDeviation="0.3"></feGaussianBlur>
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="1.05" intercept="0"/>
+                            <feFuncG type="linear" slope="1.05" intercept="0"/>
+                            <feFuncB type="linear" slope="1.05" intercept="0"/>
                         </feComponentTransfer>
                     </filter>
 
@@ -732,6 +762,11 @@ class HighContrastManager {
                             0.2126 0.7152 0.0722 0 0
                             0.2126 0.7152 0.0722 0 0
                             0 0 0 1 0"/>
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="1.2" intercept="0"/>
+                            <feFuncG type="linear" slope="1.2" intercept="0"/>
+                            <feFuncB type="linear" slope="1.2" intercept="0"/>
+                        </feComponentTransfer>
                     </filter>
 
                     <filter id="hc_extension_invert">
@@ -739,6 +774,12 @@ class HighContrastManager {
                             <feFuncR type="table" tableValues="1 0"/>
                             <feFuncG type="table" tableValues="1 0"/>
                             <feFuncB type="table" tableValues="1 0"/>
+                        </feComponentTransfer>
+                        <feGaussianBlur stdDeviation="0.3"></feGaussianBlur>
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="1.05" intercept="0"/>
+                            <feFuncG type="linear" slope="1.05" intercept="0"/>
+                            <feFuncB type="linear" slope="1.05" intercept="0"/>
                         </feComponentTransfer>
                     </filter>
 
@@ -753,14 +794,24 @@ class HighContrastManager {
                             <feFuncG type="table" tableValues="1 0"/>
                             <feFuncB type="table" tableValues="1 0"/>
                         </feComponentTransfer>
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="1.2" intercept="0"/>
+                            <feFuncG type="linear" slope="1.2" intercept="0"/>
+                            <feFuncB type="linear" slope="1.2" intercept="0"/>
+                        </feComponentTransfer>
                     </filter>
 
                     <filter id="hc_extension_yellow_on_black">
                         <feColorMatrix type="matrix" values="
-                            0.3 0.5 0.2 0 0
-                            0.3 0.5 0.2 0 0
+                            0.35 0.55 0.25 0 0
+                            0.35 0.55 0.25 0 0
                             0 0 0 0 0
                             0 0 0 1 0"/>
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="1.1" intercept="0"/>
+                            <feFuncG type="linear" slope="1.1" intercept="0"/>
+                            <feFuncB type="linear" slope="1.1" intercept="0"/>
+                        </feComponentTransfer>
                     </filter>
 
                     <!-- Научные режимы -->
@@ -770,6 +821,12 @@ class HighContrastManager {
                             0.7 0.3 0 0 0
                             0 0.3 0.7 0 0
                             0 0 0 1 0"/>
+                        <feGaussianBlur stdDeviation="0.2"></feGaussianBlur>
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="1.3" intercept="0"/>
+                            <feFuncG type="linear" slope="1.3" intercept="0"/>
+                            <feFuncB type="linear" slope="1.3" intercept="0"/>
+                        </feComponentTransfer>
                     </filter>
 
                     <filter id="hc_extension_protanopia">
@@ -778,6 +835,12 @@ class HighContrastManager {
                             0.558 0.442 0 0 0
                             0 0.242 0.758 0 0
                             0 0 0 1 0"/>
+                        <feGaussianBlur stdDeviation="0.2"></feGaussianBlur>
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="1.3" intercept="0"/>
+                            <feFuncG type="linear" slope="1.3" intercept="0"/>
+                            <feFuncB type="linear" slope="1.3" intercept="0"/>
+                        </feComponentTransfer>
                     </filter>
 
                     <filter id="hc_extension_tritanopia">
@@ -786,15 +849,23 @@ class HighContrastManager {
                             0 0.433 0.567 0 0
                             0 0.475 0.525 0 0
                             0 0 0 1 0"/>
+                        <feGaussianBlur stdDeviation="0.2"></feGaussianBlur>
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="1.3" intercept="0"/>
+                            <feFuncG type="linear" slope="1.3" intercept="0"/>
+                            <feFuncB type="linear" slope="1.3" intercept="0"/>
+                        </feComponentTransfer>
                     </filter>
 
                     <filter id="hc_extension_high_legibility">
                         <feComponentTransfer>
-                            <feFuncR type="linear" slope="1.2"/>
-                            <feFuncG type="linear" slope="1.2"/>
-                            <feFuncB type="linear" slope="1.2"/>
+                            <feFuncR type="linear" slope="1.4"/>
+                            <feFuncG type="linear" slope="1.4"/>
+                            <feFuncB type="linear" slope="1.4"/>
                         </feComponentTransfer>
                         <feColorMatrix type="saturate" values="0.9"/>
+                        <feGaussianBlur stdDeviation="0.2"></feGaussianBlur>
+                        <feConvolveMatrix order="3" kernelMatrix="0 -0.5 0 -0.5 3 -0.5 0 -0.5 0" edgeMode="duplicate"/>
                     </filter>
 
                     <filter id="hc_extension_night_vision">
@@ -806,16 +877,23 @@ class HighContrastManager {
                         <feComponentTransfer>
                             <feFuncR type="linear" slope="0.8" intercept="0.2"/>
                             <feFuncG type="linear" slope="0.4" intercept="0"/>
-                            <feFuncB type="linear" slope="0.4" intercept="0"/>
+                            <feFuncB type="linear" slope="0.3" intercept="0"/>
+                        </feComponentTransfer>
+                        <feGaussianBlur stdDeviation="0.3"></feGaussianBlur>
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="1.05" intercept="0"/>
+                            <feFuncG type="linear" slope="1.05" intercept="0"/>
+                            <feFuncB type="linear" slope="1.05" intercept="0"/>
                         </feComponentTransfer>
                     </filter>
 
                     <filter id="hc_extension_black_on_white">
                         <feComponentTransfer>
-                            <feFuncR type="linear" slope="3" intercept="-0.3"/>
-                            <feFuncG type="linear" slope="3" intercept="-0.3"/>
-                            <feFuncB type="linear" slope="3" intercept="-0.3"/>
+                            <feFuncR type="linear" slope="4" intercept="-0.3"/>
+                            <feFuncG type="linear" slope="4" intercept="-0.3"/>
+                            <feFuncB type="linear" slope="4" intercept="-0.3"/>
                         </feComponentTransfer>
+                        <feGaussianBlur stdDeviation="0.3"></feGaussianBlur>
                         <feComponentTransfer>
                             <feFuncR type="table" tableValues="0 0 0 0 0 0 0 0 0 1"/>
                             <feFuncG type="table" tableValues="0 0 0 0 0 0 0 0 0 1"/>
@@ -830,10 +908,11 @@ class HighContrastManager {
                             0.272 0.534 0.131 0 0
                             0 0 0 1 0"/>
                         <feComponentTransfer>
-                            <feFuncR type="linear" slope="1.1" intercept="0"/>
-                            <feFuncG type="linear" slope="1.1" intercept="0"/>
+                            <feFuncR type="linear" slope="1.2" intercept="0"/>
+                            <feFuncG type="linear" slope="1.2" intercept="0"/>
                             <feFuncB type="linear" slope="0.9" intercept="0"/>
                         </feComponentTransfer>
+                        <feGaussianBlur stdDeviation="0.2"></feGaussianBlur>
                     </filter>
 
                     <filter id="hc_extension_dark_sepia">
@@ -843,34 +922,47 @@ class HighContrastManager {
                             0.272 0.534 0.131 0 0
                             0 0 0 1 0"/>
                         <feComponentTransfer>
-                            <feFuncR type="linear" slope="0.6" intercept="0.1"/>
-                            <feFuncG type="linear" slope="0.5" intercept="0.08"/>
-                            <feFuncB type="linear" slope="0.3" intercept="0.05"/>
+                            <feFuncR type="linear" slope="0.7" intercept="0.1"/>
+                            <feFuncG type="linear" slope="0.6" intercept="0.08"/>
+                            <feFuncB type="linear" slope="0.4" intercept="0.05"/>
                         </feComponentTransfer>
+                        <feGaussianBlur stdDeviation="0.2"></feGaussianBlur>
                     </filter>
 
                     <filter id="hc_extension_blue_light_filter">
                         <feColorMatrix type="matrix" values="
                             1 0 0 0 0
                             0 0.9 0 0 0
-                            0 0 0.7 0 0
+                            0 0 0.6 0 0
                             0 0 0 1 0"/>
                         <feComponentTransfer>
-                            <feFuncR type="linear" slope="1" intercept="0"/>
-                            <feFuncG type="linear" slope="1" intercept="0"/>
-                            <feFuncB type="linear" slope="0.5" intercept="0"/>
+                            <feFuncR type="linear" slope="1.1" intercept="0"/>
+                            <feFuncG type="linear" slope="1.1" intercept="0"/>
+                            <feFuncB type="linear" slope="0.4" intercept="0"/>
                         </feComponentTransfer>
+                        <feGaussianBlur stdDeviation="0.2"></feGaussianBlur>
                     </filter>
 
                     <filter id="hc_extension_monochrome_blue">
                         <feColorMatrix type="matrix" values="
                             0.2 0.25 0.2 0 0
                             0.2 0.25 0.2 0 0
-                            0.6 0.5 0.6 0 0
+                            0.7 0.6 0.7 0 0
                             0 0 0 1 0"/>
                         <feComponentTransfer>
                             <feFuncR type="linear" slope="0.5" intercept="0"/>
                             <feFuncG type="linear" slope="0.5" intercept="0"/>
+                            <feFuncB type="linear" slope="1.3" intercept="0"/>
+                        </feComponentTransfer>
+                        <feGaussianBlur stdDeviation="0.3"></feGaussianBlur>
+                    </filter>
+
+                    <!-- 2K-оптимизированные режимы -->
+                    <filter id="hc_extension_2k_sharptext">
+                        <feConvolveMatrix order="3" kernelMatrix="0 -0.5 0 -0.5 3 -0.5 0 -0.5 0" edgeMode="duplicate"/>
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="1.2" intercept="0"/>
+                            <feFuncG type="linear" slope="1.2" intercept="0"/>
                             <feFuncB type="linear" slope="1.2" intercept="0"/>
                         </feComponentTransfer>
                     </filter>

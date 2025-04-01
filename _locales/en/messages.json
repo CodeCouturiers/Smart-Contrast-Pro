@@ -80,6 +80,9 @@
   "HIGHCONTRAST_MONOCHROME_BLUE": {
     "message": "Monochrome Blue"
   },
+  "HIGHCONTRAST_2K_SHARP_TEXT": {
+    "message": "2K - Sharp Text"
+  },
   "HIGHCONTRAST_SETDEFAULT": {
     "message": "Set as default scheme"
   },
