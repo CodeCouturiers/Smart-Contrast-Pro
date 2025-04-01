@@ -257,6 +257,10 @@ class ContrastManager {
   updateDocumentAttributes(scheme, isEnabled) {
     const hcValue = isEnabled ? `a${scheme}` : "a0";
     document.documentElement.setAttribute("hc", hcValue);
+
+    // Добавляем классы для научных режимов
+    document.body.classList.toggle('scientific-mode', scheme >= 6 && isEnabled);
+    document.body.classList.toggle(`mode-${scheme}`, isEnabled);
   }
 
   // Оптимизированные методы работы с кэшем
