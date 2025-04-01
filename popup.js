@@ -379,25 +379,19 @@ class ContrastManager {
       return;
     }
 
+    // Добавляем детальное логирование выбора режима
+    console.log(`[ModeSelected] ID: ${value}, Name: "${this.getSchemeName(value)}",
+      Type: ${value >= 6 ? 'Scientific' : 'Basic'},
+      Site: ${site || 'Global'},
+      Previous Mode: ${oldScheme} (${this.getSchemeName(oldScheme)})`);
+
     // Расширенное логирование для научных режимов
     const isScientificMode = value >= 6;
     if (isScientificMode) {
-      console.group('ContrastManager: Scientific Mode Change');
-      console.log(`Mode Type: ${this.getSchemeName(value)}`);
-      console.log('Mode Details:', {
-        'Previous Mode': {
-          id: oldScheme,
-          name: this.getSchemeName(oldScheme),
-          isScientific: oldScheme >= 6
-        },
-        'New Mode': {
-          id: value,
-          name: this.getSchemeName(value),
-          isScientific: true,
-          description: this.getScientificModeDescription(value)
-        },
-        'Target Site': site || 'Global Default'
-      });
+      console.groupCollapsed('[ModeDetails] Scientific Mode Properties');
+      console.log('Mode Type:', this.getSchemeName(value));
+      console.log('Description:', this.getScientificModeDescription(value));
+      console.log('Target:', site ? `Site: ${site}` : 'Global Default');
       console.groupEnd();
     }
 
