@@ -1,6 +1,6 @@
 class HighContrastManager {
   constructor() {
-    this.isProd = true; // Set to true in production to disable logging
+    this.isProd = false; // Set to true in production to disable logging
     this.enabled = false;
     this.scheme = 0;
     this.mode = window.self === window.top ? "a" : "b";
@@ -8,74 +8,85 @@ class HighContrastManager {
 
     // Определяем все цветовые схемы
     this.COLOR_SCHEMES = {
-      0: { // Нормальный контраст
-        type: 'svg',
-        filter: 'url(#hc_extension_off)',
-        background: 'inherit'
+      0: {
+        // Нормальный контраст
+        type: "svg",
+        filter: "url(#hc_extension_off)",
+        background: "inherit",
       },
-      1: { // Резкий контраст
-        type: 'svg',
-        filter: 'url(#hc_extension_high_contrast)',
-        background: 'white'
+      1: {
+        // Резкий контраст
+        type: "svg",
+        filter: "url(#hc_extension_high_contrast)",
+        background: "white",
       },
-      2: { // Оттенки серого
-        type: 'svg',
-        filter: 'url(#hc_extension_grayscale)',
-        background: 'inherit'
+      2: {
+        // Оттенки серого
+        type: "svg",
+        filter: "url(#hc_extension_grayscale)",
+        background: "inherit",
       },
-      3: { // Инверсия цвета
-        type: 'svg',
-        filter: 'url(#hc_extension_invert)',
-        background: 'inherit'
+      3: {
+        // Инверсия цвета
+        type: "svg",
+        filter: "url(#hc_extension_invert)",
+        background: "inherit",
       },
-      4: { // Негатив
-        type: 'svg',
-        filter: 'url(#hc_extension_invert_grayscale)',
-        background: 'inherit'
+      4: {
+        // Негатив
+        type: "svg",
+        filter: "url(#hc_extension_invert_grayscale)",
+        background: "inherit",
       },
-      5: { // Желтый на черном
-        type: 'svg',
-        filter: 'url(#hc_extension_yellow_on_black)',
-        background: 'black'
+      5: {
+        // Желтый на черном
+        type: "svg",
+        filter: "url(#hc_extension_yellow_on_black)",
+        background: "black",
       },
-      6: { // Дейтеранопия
-        type: 'css',
-        filter: 'grayscale(0.5) sepia(0.5) hue-rotate(320deg)',
-        textColor: '#ffffff',
-        background: '#000033',
-        linkColor: '#00ffff'
+      6: {
+        // Дейтеранопия
+        type: "css",
+        filter: "grayscale(0.5) sepia(0.5) hue-rotate(320deg)",
+        textColor: "#ffffff",
+        background: "#000033",
+        linkColor: "#00ffff",
       },
-      7: { // Протанопия
-        type: 'css',
-        filter: 'grayscale(0.6) sepia(0.4) hue-rotate(290deg)',
-        textColor: '#ffffff',
-        background: '#000033',
-        linkColor: '#00ffff'
+      7: {
+        // Протанопия
+        type: "css",
+        filter: "grayscale(0.6) sepia(0.4) hue-rotate(290deg)",
+        textColor: "#ffffff",
+        background: "#000033",
+        linkColor: "#00ffff",
       },
-      8: { // Тританопия
-        type: 'css',
-        filter: 'grayscale(0.4) sepia(0.6) hue-rotate(220deg)',
-        textColor: '#ffff00',
-        background: '#000066',
-        linkColor: '#00ff00'
+      8: {
+        // Тританопия
+        type: "css",
+        filter: "grayscale(0.4) sepia(0.6) hue-rotate(220deg)",
+        textColor: "#ffff00",
+        background: "#000066",
+        linkColor: "#00ff00",
       },
-      9: { // Повышенная читаемость
-        type: 'css',
-        filter: 'contrast(110%) brightness(105%)',
-        textColor: '#ffffff',
-        background: '#1a1a1a',
-        linkColor: '#66ff66',
-        fontSize: '110%',
-        lineHeight: '1.5',
-        letterSpacing: '0.5px'
+      9: {
+        // Повышенная читаемость
+        type: "css",
+        filter: "contrast(110%) brightness(105%)",
+        textColor: "#ffffff",
+        background: "#1a1a1a",
+        linkColor: "#66ff66",
+        fontSize: "110%",
+        lineHeight: "1.5",
+        letterSpacing: "0.5px",
       },
-      10: { // Ночное зрение
-        type: 'css',
-        filter: 'brightness(90%) sepia(30%) hue-rotate(320deg)',
-        textColor: '#ff0000',
-        background: '#000000',
-        linkColor: '#990000'
-      }
+      10: {
+        // Ночное зрение
+        type: "css",
+        filter: "brightness(90%) sepia(30%) hue-rotate(320deg)",
+        textColor: "#ff0000",
+        background: "#000000",
+        linkColor: "#990000",
+      },
     };
 
     this.log(
@@ -262,28 +273,32 @@ class HighContrastManager {
     const validSchemeId = this.validateScheme(schemeId);
     const scheme = this.COLOR_SCHEMES[validSchemeId];
 
-    this.group('HighContrastManager: Applying Color Scheme');
-    this.log('Scheme ID:', validSchemeId);
-    this.log('Scheme Type:', scheme.type);
-    this.log('Scheme Config:', scheme);
+    this.group("HighContrastManager: Applying Color Scheme");
+    this.log("Scheme ID:", validSchemeId);
+    this.log("Scheme Type:", scheme.type);
+    this.log("Scheme Config:", scheme);
 
     // Очищаем все существующие стили перед применением новых
     this.clearAllStyles();
 
-    const style = document.createElement('style');
-    style.id = 'hc_style';
-    let css = '';
+    const style = document.createElement("style");
+    style.id = "hc_style";
+    let css = "";
 
-    if (scheme.type === 'svg') {
-      this.log('Applying SVG Filter Mode');
+    if (scheme.type === "svg") {
+      this.log("Applying SVG Filter Mode");
       css = `
         html {
           filter: ${scheme.filter} !important;
-          ${scheme.background !== 'inherit' ? `background: ${scheme.background} !important;` : ''}
+          ${
+            scheme.background !== "inherit"
+              ? `background: ${scheme.background} !important;`
+              : ""
+          }
         }
       `;
-    } else if (scheme.type === 'css') {
-      this.log('Applying CSS Mode with styles:');
+    } else if (scheme.type === "css") {
+      this.log("Applying CSS Mode with styles:");
 
       const htmlStyles = {
         filter: scheme.filter,
@@ -291,43 +306,59 @@ class HighContrastManager {
         color: scheme.textColor,
         fontSize: scheme.fontSize,
         lineHeight: scheme.lineHeight,
-        letterSpacing: scheme.letterSpacing
+        letterSpacing: scheme.letterSpacing,
       };
-      this.log('HTML Styles:', htmlStyles);
+      this.log("HTML Styles:", htmlStyles);
 
       const bodyStyles = {
         backgroundColor: scheme.background,
         color: scheme.textColor,
         fontSize: scheme.fontSize,
         lineHeight: scheme.lineHeight,
-        letterSpacing: scheme.letterSpacing
+        letterSpacing: scheme.letterSpacing,
       };
-      this.log('Body Styles:', bodyStyles);
+      this.log("Body Styles:", bodyStyles);
 
       const elementStyles = {
         textColor: scheme.textColor,
         linkColor: scheme.linkColor,
         background: scheme.background,
-        filter: scheme.filter
+        filter: scheme.filter,
       };
-      this.log('Element Styles:', elementStyles);
+      this.log("Element Styles:", elementStyles);
 
       css = `
         html {
           filter: ${scheme.filter} !important;
           background: ${scheme.background} !important;
           color: ${scheme.textColor} !important;
-          ${scheme.fontSize ? `font-size: ${scheme.fontSize} !important;` : ''}
-          ${scheme.lineHeight ? `line-height: ${scheme.lineHeight} !important;` : ''}
-          ${scheme.letterSpacing ? `letter-spacing: ${scheme.letterSpacing} !important;` : ''}
+          ${scheme.fontSize ? `font-size: ${scheme.fontSize} !important;` : ""}
+          ${
+            scheme.lineHeight
+              ? `line-height: ${scheme.lineHeight} !important;`
+              : ""
+          }
+          ${
+            scheme.letterSpacing
+              ? `letter-spacing: ${scheme.letterSpacing} !important;`
+              : ""
+          }
         }
 
         body {
           background-color: ${scheme.background} !important;
           color: ${scheme.textColor} !important;
-          ${scheme.fontSize ? `font-size: ${scheme.fontSize} !important;` : ''}
-          ${scheme.lineHeight ? `line-height: ${scheme.lineHeight} !important;` : ''}
-          ${scheme.letterSpacing ? `letter-spacing: ${scheme.letterSpacing} !important;` : ''}
+          ${scheme.fontSize ? `font-size: ${scheme.fontSize} !important;` : ""}
+          ${
+            scheme.lineHeight
+              ? `line-height: ${scheme.lineHeight} !important;`
+              : ""
+          }
+          ${
+            scheme.letterSpacing
+              ? `letter-spacing: ${scheme.letterSpacing} !important;`
+              : ""
+          }
         }
 
         /* Основные текстовые элементы */
@@ -369,33 +400,33 @@ class HighContrastManager {
 
     // Проверяем применение стилей
     setTimeout(() => {
-      this.group('Style Application Check');
+      this.group("Style Application Check");
 
       const html = document.documentElement;
       const body = document.body;
 
-      this.log('Applied HTML Styles:', {
+      this.log("Applied HTML Styles:", {
         filter: getComputedStyle(html).filter,
         background: getComputedStyle(html).background,
         color: getComputedStyle(html).color,
         fontSize: getComputedStyle(html).fontSize,
         lineHeight: getComputedStyle(html).lineHeight,
-        letterSpacing: getComputedStyle(html).letterSpacing
+        letterSpacing: getComputedStyle(html).letterSpacing,
       });
 
-      this.log('Applied Body Styles:', {
+      this.log("Applied Body Styles:", {
         backgroundColor: getComputedStyle(body).backgroundColor,
         color: getComputedStyle(body).color,
         fontSize: getComputedStyle(body).fontSize,
         lineHeight: getComputedStyle(body).lineHeight,
-        letterSpacing: getComputedStyle(body).letterSpacing
+        letterSpacing: getComputedStyle(body).letterSpacing,
       });
 
       // Проверяем применение стилей к ссылкам
-      const firstLink = document.querySelector('a');
+      const firstLink = document.querySelector("a");
       if (firstLink) {
-        this.log('Link Styles:', {
-          color: getComputedStyle(firstLink).color
+        this.log("Link Styles:", {
+          color: getComputedStyle(firstLink).color,
         });
       }
 
@@ -413,14 +444,14 @@ class HighContrastManager {
     }
 
     // Сбрасываем фильтры
-    document.documentElement.style.filter = '';
-    document.body.style.filter = '';
+    document.documentElement.style.filter = "";
+    document.body.style.filter = "";
 
     // Сбрасываем inline стили
-    document.documentElement.style.backgroundColor = '';
-    document.documentElement.style.color = '';
-    document.body.style.backgroundColor = '';
-    document.body.style.color = '';
+    document.documentElement.style.backgroundColor = "";
+    document.documentElement.style.color = "";
+    document.body.style.backgroundColor = "";
+    document.body.style.color = "";
   }
 
   updateHtmlAttributes(html) {
