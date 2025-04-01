@@ -52,38 +52,27 @@ class HighContrastManager {
       },
       7: {
         // Протанопия
-        type: "css",
-        filter: "grayscale(0.6) sepia(0.4) hue-rotate(290deg)",
-        textColor: "#ffffff",
+        type: "svg",
+        filter: "url(#hc_extension_protanopia)",
         background: "#000033",
-        linkColor: "#00ffff",
       },
       8: {
         // Тританопия
-        type: "css",
-        filter: "grayscale(0.4) sepia(0.6) hue-rotate(220deg)",
-        textColor: "#ffff00",
+        type: "svg",
+        filter: "url(#hc_extension_tritanopia)",
         background: "#000066",
-        linkColor: "#00ff00",
       },
       9: {
         // Повышенная читаемость
-        type: "css",
-        filter: "contrast(110%) brightness(105%)",
-        textColor: "#ffffff",
+        type: "svg",
+        filter: "url(#hc_extension_high_legibility)",
         background: "#1a1a1a",
-        linkColor: "#66ff66",
-        fontSize: "110%",
-        lineHeight: "1.5",
-        letterSpacing: "0.5px",
       },
       10: {
         // Ночное зрение
-        type: "css",
-        filter: "brightness(90%) sepia(30%) hue-rotate(320deg)",
-        textColor: "#ff0000",
+        type: "svg",
+        filter: "url(#hc_extension_night_vision)",
         background: "#000000",
-        linkColor: "#990000",
       },
     };
 
