@@ -203,7 +203,7 @@ class HighContrastBackground {
 
   getDefaultScheme() {
     const scheme = localStorage.getItem("scheme");
-    return scheme >= 0 && scheme <= 5 ? parseInt(scheme) : 3;
+    return scheme >= 0 && scheme <= 10 ? parseInt(scheme) : 3;
   }
 
   getSiteScheme(site) {
@@ -212,7 +212,7 @@ class HighContrastBackground {
         localStorage.getItem("siteschemes") || "{}"
       );
       const scheme = siteSchemes[site];
-      return scheme >= 0 && scheme <= 5
+      return scheme >= 0 && scheme <= 10
         ? parseInt(scheme)
         : this.getDefaultScheme();
     } catch {

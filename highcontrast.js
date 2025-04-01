@@ -591,6 +591,36 @@ class HighContrastManager {
             filter: url(#hc_extension_yellow_on_black) !important;
             background: black !important;
         }
+
+        /* Схема 6: Дейтеранопия */
+        html[hc="a6"] {
+            filter: url(#hc_extension_deuteranopia) !important;
+            background: #000033 !important;
+        }
+
+        /* Схема 7: Протанопия */
+        html[hc="a7"] {
+            filter: url(#hc_extension_protanopia) !important;
+            background: #000033 !important;
+        }
+
+        /* Схема 8: Тританопия */
+        html[hc="a8"] {
+            filter: url(#hc_extension_tritanopia) !important;
+            background: #000066 !important;
+        }
+
+        /* Схема 9: Повышенная читаемость */
+        html[hc="a9"] {
+            filter: url(#hc_extension_high_legibility) !important;
+            background: #1a1a1a !important;
+        }
+
+        /* Схема 10: Ночное зрение */
+        html[hc="a10"] {
+            filter: url(#hc_extension_night_vision) !important;
+            background: #000000 !important;
+        }
     `;
   }
 
