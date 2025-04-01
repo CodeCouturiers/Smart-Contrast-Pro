@@ -50,6 +50,21 @@
   "HIGHCONTRAST_YELLOW_ON_BLACK": {
     "message": "Jaune sur noir"
   },
+  "HIGHCONTRAST_DEUTERANOPIA": {
+    "message": "Deut\u00e9ranopie (daltonisme rouge-vert)"
+  },
+  "HIGHCONTRAST_PROTANOPIA": {
+    "message": "Protanopie (daltonisme au rouge)"
+  },
+  "HIGHCONTRAST_TRITANOPIA": {
+    "message": "Tritanopie (daltonisme bleu-jaune)"
+  },
+  "HIGHCONTRAST_HIGH_LEGIBILITY": {
+    "message": "Haute lisibilit\u00e9"
+  },
+  "HIGHCONTRAST_NIGHT_VISION": {
+    "message": "Mode vision nocturne"
+  },
   "HIGHCONTRAST_SETDEFAULT": {
     "message": "D\u00e9finir comme mod\u00e8le par d\u00e9faut"
   },

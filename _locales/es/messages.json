@@ -50,6 +50,21 @@
   "HIGHCONTRAST_YELLOW_ON_BLACK": {
     "message": "Amarillo sobre negro"
   },
+  "HIGHCONTRAST_DEUTERANOPIA": {
+    "message": "Deuteranopia (daltonismo rojo-verde)"
+  },
+  "HIGHCONTRAST_PROTANOPIA": {
+    "message": "Protanopia (daltonismo al rojo)"
+  },
+  "HIGHCONTRAST_TRITANOPIA": {
+    "message": "Tritanopia (daltonismo azul-amarillo)"
+  },
+  "HIGHCONTRAST_HIGH_LEGIBILITY": {
+    "message": "Alta legibilidad"
+  },
+  "HIGHCONTRAST_NIGHT_VISION": {
+    "message": "Modo visi\u00f3n nocturna"
+  },
   "HIGHCONTRAST_SETDEFAULT": {
     "message": "Establecer como esquema predeterminado"
   },

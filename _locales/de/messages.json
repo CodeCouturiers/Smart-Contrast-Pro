@@ -50,6 +50,21 @@
   "HIGHCONTRAST_YELLOW_ON_BLACK": {
     "message": "Gelb auf Schwarz"
   },
+  "HIGHCONTRAST_DEUTERANOPIA": {
+    "message": "Deuteranopie (Rot-Gr\u00fcn-Farbblindheit)"
+  },
+  "HIGHCONTRAST_PROTANOPIA": {
+    "message": "Protanopie (Rot-Farbblindheit)"
+  },
+  "HIGHCONTRAST_TRITANOPIA": {
+    "message": "Tritanopie (Blau-Gelb-Farbblindheit)"
+  },
+  "HIGHCONTRAST_HIGH_LEGIBILITY": {
+    "message": "Verbesserte Lesbarkeit"
+  },
+  "HIGHCONTRAST_NIGHT_VISION": {
+    "message": "Nachtmodus"
+  },
   "HIGHCONTRAST_SETDEFAULT": {
     "message": "Als Standardschema festlegen"
   },

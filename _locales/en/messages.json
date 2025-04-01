@@ -50,6 +50,21 @@
   "HIGHCONTRAST_YELLOW_ON_BLACK": {
     "message": "Yellow on Black"
   },
+  "HIGHCONTRAST_DEUTERANOPIA": {
+    "message": "Deuteranopia (Red-Green Color Blindness)"
+  },
+  "HIGHCONTRAST_PROTANOPIA": {
+    "message": "Protanopia (Red Color Blindness)"
+  },
+  "HIGHCONTRAST_TRITANOPIA": {
+    "message": "Tritanopia (Blue-Yellow Color Blindness)"
+  },
+  "HIGHCONTRAST_HIGH_LEGIBILITY": {
+    "message": "High Legibility"
+  },
+  "HIGHCONTRAST_NIGHT_VISION": {
+    "message": "Night Vision Mode"
+  },
   "HIGHCONTRAST_SETDEFAULT": {
     "message": "Set as default scheme"
   },
