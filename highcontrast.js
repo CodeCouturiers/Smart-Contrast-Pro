@@ -110,6 +110,9 @@ class HighContrastManager {
   }
 
   async init() {
+    // Calculate and save the maximum scheme number
+    this.calculateMaxScheme();
+
     this.setupMessageListener();
     this.setupKeyboardListener();
     this.requestInitialState();
@@ -118,6 +121,23 @@ class HighContrastManager {
     // Отложенные обновления для надежности
     setTimeout(() => this.updateExtraElements(), 2000);
     window.addEventListener("load", () => this.onLoadComplete());
+  }
+
+  calculateMaxScheme() {
+    // Get the highest scheme number defined in COLOR_SCHEMES
+    const schemeNumbers = Object.keys(this.COLOR_SCHEMES).map(key => parseInt(key));
+    const maxScheme = Math.max(...schemeNumbers);
+
+    this.log("HighContrastManager: Maximum scheme number:", maxScheme);
+
+    // Store in localStorage so background script can access it
+    localStorage.setItem("maxScheme", maxScheme.toString());
+
+    // Also send to background script immediately
+    chrome.runtime.sendMessage({
+      action: "updateMaxScheme",
+      maxScheme: maxScheme
+    });
   }
 
   setupMessageListener() {

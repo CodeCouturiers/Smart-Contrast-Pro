@@ -1,13 +1,35 @@
 class HighContrastBackground {
   constructor() {
+    this.maxScheme = 10; // Default value initially
     this.init();
   }
 
   async init() {
+    // Try to get the maximum scheme number from localStorage
+    this.determineMaxScheme();
+
     this.injectContentScripts();
     this.setupMessageListeners();
     this.setupStorageListener();
     this.setupBrowserAction();
+  }
+
+  // New method to determine the maximum scheme number
+  determineMaxScheme() {
+    try {
+      // Try to get max scheme from localStorage if it was saved before
+      const savedMaxScheme = localStorage.getItem("maxScheme");
+      if (savedMaxScheme && !isNaN(parseInt(savedMaxScheme))) {
+        this.maxScheme = parseInt(savedMaxScheme);
+        console.log(`Using saved max scheme: ${this.maxScheme}`);
+        return;
+      }
+
+      // If not available, we'll use the default 10
+      console.log(`Using default max scheme: ${this.maxScheme}`);
+    } catch (error) {
+      console.error("Error determining max scheme:", error);
+    }
   }
 
   async injectContentScripts() {
@@ -126,6 +148,11 @@ class HighContrastBackground {
           scheme: scheme,
         });
       }
+      if (request.action === "updateMaxScheme" && request.maxScheme) {
+        console.log(`Received max scheme update: ${request.maxScheme}`);
+        this.maxScheme = parseInt(request.maxScheme);
+        localStorage.setItem("maxScheme", this.maxScheme.toString());
+      }
     });
   }
 
@@ -203,7 +230,7 @@ class HighContrastBackground {
 
   getDefaultScheme() {
     const scheme = localStorage.getItem("scheme");
-    return scheme >= 0 && scheme <= 10 ? parseInt(scheme) : 3;
+    return scheme >= 0 && scheme <= this.maxScheme ? parseInt(scheme) : 3;
   }
 
   getSiteScheme(site) {
@@ -212,7 +239,7 @@ class HighContrastBackground {
         localStorage.getItem("siteschemes") || "{}"
       );
       const scheme = siteSchemes[site];
-      return scheme >= 0 && scheme <= 10
+      return scheme >= 0 && scheme <= this.maxScheme
         ? parseInt(scheme)
         : this.getDefaultScheme();
     } catch {
