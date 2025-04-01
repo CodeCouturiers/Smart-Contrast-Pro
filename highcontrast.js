@@ -46,11 +46,9 @@ class HighContrastManager {
       },
       6: {
         // Дейтеранопия
-        type: "css",
-        filter: "grayscale(0.5) sepia(0.5) hue-rotate(320deg)",
-        textColor: "#ffffff",
+        type: "svg",
+        filter: "url(#hc_extension_deuteranopia)",
         background: "#000033",
-        linkColor: "#00ffff",
       },
       7: {
         // Протанопия

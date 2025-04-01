@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High Contrast Mode Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .color-sample {
+            display: inline-block;
+            width: 100px;
+            height: 50px;
+            margin: 5px;
+            text-align: center;
+            line-height: 50px;
+            color: white;
+            font-weight: bold;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .mode-button {
+            margin: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        .image-section img {
+            max-width: 300px;
+            height: auto;
+            margin: 10px;
+        }
+
+        .contrast-demo {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .link-section a {
+            margin-right: 15px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <h1>High Contrast Mode Test Page</h1>
+    <p>This page is designed to test various high contrast modes. Use the controls at the bottom-right to toggle different modes.</p>
+
+    <div class="test-section">
+        <h2>Text Elements</h2>
+        <h3>Heading Level 3</h3>
+        <h4>Heading Level 4</h4>
+        <p>This is a standard paragraph with <strong>bold text</strong>, <em>italic text</em>, and <u>underlined text</u>.</p>
+        <p>This paragraph contains a <a href="#">standard link</a> that should be clearly visible in all modes.</p>
+        <blockquote>This is a blockquote that might have a different styling in certain contrast modes.</blockquote>
+    </div>
+
+    <div class="test-section">
+        <h2>Color Samples</h2>
+        <div class="contrast-demo">
+            <div class="color-sample" style="background-color: #ff0000;">Red</div>
+            <div class="color-sample" style="background-color: #00ff00;">Green</div>
+            <div class="color-sample" style="background-color: #0000ff;">Blue</div>
+            <div class="color-sample" style="background-color: #ffff00; color: black;">Yellow</div>
+            <div class="color-sample" style="background-color: #00ffff; color: black;">Cyan</div>
+            <div class="color-sample" style="background-color: #ff00ff;">Magenta</div>
+            <div class="color-sample" style="background-color: #000000;">Black</div>
+            <div class="color-sample" style="background-color: #ffffff; color: black;">White</div>
+            <div class="color-sample" style="background-color: #808080;">Gray</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Form Elements</h2>
+        <form>
+            <div style="margin-bottom: 10px;">
+                <label for="text-input">Text Input:</label>
+                <input type="text" id="text-input" placeholder="Type something here">
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <label for="password-input">Password Input:</label>
+                <input type="password" id="password-input" value="password123">
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <label for="textarea">Textarea:</label>
+                <textarea id="textarea" rows="3" placeholder="Enter multiple lines of text"></textarea>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <label for="select">Select Dropdown:</label>
+                <select id="select">
+                    <option value="option1">Option 1</option>
+                    <option value="option2">Option 2</option>
+                    <option value="option3">Option 3</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <label>Checkboxes:</label>
+                <div>
+                    <input type="checkbox" id="checkbox1">
+                    <label for="checkbox1">Checkbox 1</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="checkbox2" checked>
+                    <label for="checkbox2">Checkbox 2 (checked)</label>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <label>Radio Buttons:</label>
+                <div>
+                    <input type="radio" id="radio1" name="radio-group" checked>
+                    <label for="radio1">Radio 1</label>
+                </div>
+                <div>
+                    <input type="radio" id="radio2" name="radio-group">
+                    <label for="radio2">Radio 2</label>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <button type="button">Standard Button</button>
+                <button type="button" disabled>Disabled Button</button>
+                <input type="submit" value="Submit Button">
+            </div>
+        </form>
+    </div>
+
+    <div class="test-section image-section">
+        <h2>Images</h2>
+        <p>Images should be properly filtered in color blind modes:</p>
+        <img src="https://via.placeholder.com/300x200/ff0000/ffffff" alt="Red placeholder">
+        <img src="https://via.placeholder.com/300x200/00ff00/000000" alt="Green placeholder">
+        <img src="https://via.placeholder.com/300x200/0000ff/ffffff" alt="Blue placeholder">
+    </div>
+
+    <div class="test-section">
+        <h2>Link Tests for Color Blindness</h2>
+        <div class="link-section">
+            <a href="#" style="color: #0000FF; background-color: white;">Blue link on white</a>
+            <a href="#" style="color: #00FF00; background-color: black;">Green link on black</a>
+            <a href="#" style="color: #FF0000; background-color: white;">Red link on white</a>
+            <a href="#" style="color: #FFFF00; background-color: black;">Yellow link on black</a>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Table Example</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Header 1</th>
+                    <th>Header 2</th>
+                    <th>Header 3</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Row 1, Cell 1</td>
+                    <td>Row 1, Cell 2</td>
+                    <td>Row 1, Cell 3</td>
+                </tr>
+                <tr>
+                    <td>Row 2, Cell 1</td>
+                    <td>Row 2, Cell 2</td>
+                    <td>Row 2, Cell 3</td>
+                </tr>
+                <tr>
+                    <td>Row 3, Cell 1</td>
+                    <td>Row 3, Cell 2</td>
+                    <td>Row 3, Cell 3</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="test-section">
+        <h2>Icons and SVGs</h2>
+        <svg width="100" height="100">
+            <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+        </svg>
+        <svg width="100" height="100">
+            <rect width="80" height="80" x="10" y="10" fill="blue" />
+        </svg>
+        <svg width="100" height="100">
+            <polygon points="50,10 90,90 10,90" fill="red" />
+        </svg>
+    </div>
+
+    <div class="controls">
+        <h3>High Contrast Controls</h3>
+        <div>
+            <button class="mode-button" onclick="chrome.runtime.sendMessage({action: 'toggleSite'})">Toggle High Contrast</button>
+        </div>
+        <div>
+            <label for="scheme-select">Select Scheme:</label>
+            <select id="scheme-select" onchange="changeScheme(this.value)">
+                <option value="0">Normal Contrast</option>
+                <option value="1">High Contrast</option>
+                <option value="2">Grayscale</option>
+                <option value="3">Invert Colors</option>
+                <option value="4">Negative</option>
+                <option value="5">Yellow on Black</option>
+                <option value="6">Deuteranopia (Red-Green Blindness)</option>
+                <option value="7">Protanopia</option>
+                <option value="8">Tritanopia</option>
+                <option value="9">Enhanced Readability</option>
+                <option value="10">Night Vision</option>
+            </select>
+        </div>
+    </div>
+
+    <script>
+        function changeScheme(scheme) {
+            chrome.runtime.sendMessage({
+                action: 'changeScheme',
+                scheme: parseInt(scheme),
+                enabled: true
+            });
+        }
+    </script>
+
+    <!-- Include the high contrast extension script -->
+    <script src="highcontrast.js"></script>
+</body>
+</html>
