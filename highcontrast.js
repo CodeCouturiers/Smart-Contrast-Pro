@@ -74,6 +74,36 @@ class HighContrastManager {
         filter: "url(#hc_extension_night_vision)",
         background: "#000000",
       },
+      11: {
+        // Черное на белом (высокий контраст)
+        type: "svg",
+        filter: "url(#hc_extension_black_on_white)",
+        background: "white",
+      },
+      12: {
+        // Светлая сепия
+        type: "svg",
+        filter: "url(#hc_extension_light_sepia)",
+        background: "#f4ecd8",
+      },
+      13: {
+        // Темная сепия
+        type: "svg",
+        filter: "url(#hc_extension_dark_sepia)",
+        background: "#2a2018",
+      },
+      14: {
+        // Фильтр синего света
+        type: "svg",
+        filter: "url(#hc_extension_blue_light_filter)",
+        background: "inherit",
+      },
+      15: {
+        // Монохромный синий
+        type: "svg",
+        filter: "url(#hc_extension_monochrome_blue)",
+        background: "#000022",
+      },
     };
 
     this.log(
@@ -641,6 +671,36 @@ class HighContrastManager {
             filter: url(#hc_extension_night_vision) !important;
             background: #000000 !important;
         }
+
+        /* Схема 11: Черное на белом (высокий контраст) */
+        html[hc="a11"] {
+            filter: url(#hc_extension_black_on_white) !important;
+            background: white !important;
+        }
+
+        /* Схема 12: Светлая сепия */
+        html[hc="a12"] {
+            filter: url(#hc_extension_light_sepia) !important;
+            background: #f4ecd8 !important;
+        }
+
+        /* Схема 13: Темная сепия */
+        html[hc="a13"] {
+            filter: url(#hc_extension_dark_sepia) !important;
+            background: #2a2018 !important;
+        }
+
+        /* Схема 14: Фильтр синего света */
+        html[hc="a14"] {
+            filter: url(#hc_extension_blue_light_filter) !important;
+            background: inherit !important;
+        }
+
+        /* Схема 15: Монохромный синий */
+        html[hc="a15"] {
+            filter: url(#hc_extension_monochrome_blue) !important;
+            background: #000022 !important;
+        }
     `;
   }
 
@@ -745,6 +805,71 @@ class HighContrastManager {
                             <feFuncR type="linear" slope="0.8" intercept="0.2"/>
                             <feFuncG type="linear" slope="0.4" intercept="0"/>
                             <feFuncB type="linear" slope="0.4" intercept="0"/>
+                        </feComponentTransfer>
+                    </filter>
+
+                    <filter id="hc_extension_black_on_white">
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="3" intercept="-0.3"/>
+                            <feFuncG type="linear" slope="3" intercept="-0.3"/>
+                            <feFuncB type="linear" slope="3" intercept="-0.3"/>
+                        </feComponentTransfer>
+                        <feComponentTransfer>
+                            <feFuncR type="table" tableValues="0 0 0 0 0 0 0 0 0 1"/>
+                            <feFuncG type="table" tableValues="0 0 0 0 0 0 0 0 0 1"/>
+                            <feFuncB type="table" tableValues="0 0 0 0 0 0 0 0 0 1"/>
+                        </feComponentTransfer>
+                    </filter>
+
+                    <filter id="hc_extension_light_sepia">
+                        <feColorMatrix type="matrix" values="
+                            0.393 0.769 0.189 0 0
+                            0.349 0.686 0.168 0 0
+                            0.272 0.534 0.131 0 0
+                            0 0 0 1 0"/>
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="1.1" intercept="0"/>
+                            <feFuncG type="linear" slope="1.1" intercept="0"/>
+                            <feFuncB type="linear" slope="0.9" intercept="0"/>
+                        </feComponentTransfer>
+                    </filter>
+
+                    <filter id="hc_extension_dark_sepia">
+                        <feColorMatrix type="matrix" values="
+                            0.393 0.769 0.189 0 0
+                            0.349 0.686 0.168 0 0
+                            0.272 0.534 0.131 0 0
+                            0 0 0 1 0"/>
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="0.6" intercept="0.1"/>
+                            <feFuncG type="linear" slope="0.5" intercept="0.08"/>
+                            <feFuncB type="linear" slope="0.3" intercept="0.05"/>
+                        </feComponentTransfer>
+                    </filter>
+
+                    <filter id="hc_extension_blue_light_filter">
+                        <feColorMatrix type="matrix" values="
+                            1 0 0 0 0
+                            0 0.9 0 0 0
+                            0 0 0.7 0 0
+                            0 0 0 1 0"/>
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="1" intercept="0"/>
+                            <feFuncG type="linear" slope="1" intercept="0"/>
+                            <feFuncB type="linear" slope="0.5" intercept="0"/>
+                        </feComponentTransfer>
+                    </filter>
+
+                    <filter id="hc_extension_monochrome_blue">
+                        <feColorMatrix type="matrix" values="
+                            0.2 0.25 0.2 0 0
+                            0.2 0.25 0.2 0 0
+                            0.6 0.5 0.6 0 0
+                            0 0 0 1 0"/>
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="0.5" intercept="0"/>
+                            <feFuncG type="linear" slope="0.5" intercept="0"/>
+                            <feFuncB type="linear" slope="1.2" intercept="0"/>
                         </feComponentTransfer>
                     </filter>
                 </defs>

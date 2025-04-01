@@ -65,6 +65,21 @@
   "HIGHCONTRAST_NIGHT_VISION": {
     "message": "Night Vision Mode"
   },
+  "HIGHCONTRAST_BLACK_ON_WHITE": {
+    "message": "Black on White (High Contrast)"
+  },
+  "HIGHCONTRAST_LIGHT_SEPIA": {
+    "message": "Light Sepia"
+  },
+  "HIGHCONTRAST_DARK_SEPIA": {
+    "message": "Dark Sepia"
+  },
+  "HIGHCONTRAST_BLUE_LIGHT_FILTER": {
+    "message": "Blue Light Filter"
+  },
+  "HIGHCONTRAST_MONOCHROME_BLUE": {
+    "message": "Monochrome Blue"
+  },
   "HIGHCONTRAST_SETDEFAULT": {
     "message": "Set as default scheme"
   },
